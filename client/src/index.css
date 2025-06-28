@@ -1,0 +1,502 @@
+@import './components/btn-primary.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animações de Scroll Aprimoradas */
+@layer utilities {
+  .animate-fade-in {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+  
+  .animate-fade-in[style*="translate-x"] {
+    transform: translateX(0) !important;
+  }
+  
+  .animate-fade-in[style*="scale"] {
+    transform: scale(1) !important;
+  }
+  
+  .scroll-animation {
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .scroll-animation.animate-fade-in {
+    opacity: 1;
+  }
+  
+  /* Slide Up Animation */
+  .scroll-animation.slide-up {
+    transform: translateY(50px);
+  }
+  
+  .scroll-animation.slide-up.animate-fade-in {
+    transform: translateY(0);
+  }
+  
+  /* Slide Left Animation */
+  .scroll-animation.slide-left {
+    transform: translateX(50px);
+  }
+  
+  .scroll-animation.slide-left.animate-fade-in {
+    transform: translateX(0);
+  }
+  
+  /* Slide Right Animation */
+  .scroll-animation.slide-right {
+    transform: translateX(-50px);
+  }
+  
+  .scroll-animation.slide-right.animate-fade-in {
+    transform: translateX(0);
+  }
+  
+  /* Scale Animation */
+  .scroll-animation.scale-in {
+    transform: scale(0.8);
+  }
+  
+  .scroll-animation.scale-in.animate-fade-in {
+    transform: scale(1);
+  }
+  
+  /* Rotate Animation */
+  .scroll-animation.rotate-in {
+    transform: rotate(-10deg) scale(0.9);
+  }
+  
+  .scroll-animation.rotate-in.animate-fade-in {
+    transform: rotate(0deg) scale(1);
+  }
+  
+  /* Bounce Animation */
+  .scroll-animation.bounce-in {
+    transform: translateY(30px) scale(0.9);
+  }
+  
+  .scroll-animation.bounce-in.animate-fade-in {
+    transform: translateY(0) scale(1);
+    animation: bounce 0.6s ease-out;
+  }
+  
+  /* Stagger Animation for Lists */
+  .scroll-animation.stagger {
+    transition-delay: calc(var(--stagger-index, 0) * 0.1s);
+  }
+  
+  /* Parallax Effect */
+  .scroll-animation.parallax {
+    transform: translateY(100px);
+  }
+  
+  .scroll-animation.parallax.animate-fade-in {
+    transform: translateY(0);
+  }
+  
+  /* Fade In with Blur */
+  .scroll-animation.blur-in {
+    filter: blur(10px);
+    transform: scale(0.95);
+  }
+  
+  .scroll-animation.blur-in.animate-fade-in {
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+/* Keyframes for Bounce Animation */
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  40%, 43% {
+    transform: translateY(-10px) scale(1.05);
+  }
+  70% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  90% {
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+/* Melhorias para Dark Mode */
+@layer components {
+  /* Formulários no Dark Mode */
+  .dark input,
+  .dark textarea,
+  .dark select {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-400;
+  }
+  
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    @apply border-emerald-500 ring-emerald-500/20 bg-gray-700;
+  }
+  
+  /* Botões no Dark Mode */
+  .dark .btn-primary {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600;
+  }
+  
+  .dark .btn-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-white border-gray-600;
+  }
+  
+  .dark .btn-outline {
+    @apply bg-transparent border-emerald-500 text-emerald-500 hover:bg-emerald-500 hover:text-white;
+  }
+  
+  /* Cards no Dark Mode */
+  .dark .card {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  /* Tabelas no Dark Mode */
+  .dark table {
+    @apply bg-gray-800 text-white;
+  }
+  
+  .dark th {
+    @apply bg-gray-700 text-white border-gray-600;
+  }
+  
+  .dark td {
+    @apply border-gray-600;
+  }
+  
+  .dark tr:hover {
+    @apply bg-gray-700;
+  }
+  
+  /* Modais no Dark Mode */
+  .dark .modal-content {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  /* Sidebar no Dark Mode */
+  .dark .sidebar {
+    @apply bg-gray-900 border-gray-700;
+  }
+  
+  .dark .sidebar-item {
+    @apply text-gray-300 hover:bg-gray-800 hover:text-white;
+  }
+  
+  .dark .sidebar-item.active {
+    @apply bg-emerald-600 text-white;
+  }
+  
+  /* Notificações no Dark Mode */
+  .dark .notification {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  .dark .notification.success {
+    @apply bg-emerald-900 border-emerald-700 text-emerald-100;
+  }
+  
+  .dark .notification.error {
+    @apply bg-red-900 border-red-700 text-red-100;
+  }
+  
+  .dark .notification.warning {
+    @apply bg-yellow-900 border-yellow-700 text-yellow-100;
+  }
+  
+  /* Comentários no Dark Mode */
+  .dark .comment {
+    @apply bg-gray-800 border-gray-700 text-white;
+  }
+  
+  .dark .comment-form {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .dark .comment-actions {
+    @apply text-gray-400 hover:text-white;
+  }
+}
+
+/* Estilos para botões de tema e idioma na página de configurações */
+.theme-button-active {
+  @apply border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300;
+}
+
+.theme-button-inactive {
+  @apply border-gray-300 dark:border-gray-600 hover:border-purple-300 text-gray-700 dark:text-gray-300;
+}
+
+.language-button-active {
+  @apply border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300;
+}
+
+.language-button-inactive {
+  @apply border-gray-300 dark:border-gray-600 hover:border-indigo-300 text-gray-700 dark:text-gray-300;
+}
+
+/* Estilos para alto contraste */
+.high-contrast {
+  filter: contrast(1.5);
+}
+
+/* Estilos para redução de movimento */
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Estilos para diferentes tamanhos de fonte */
+.font-size-small {
+  font-size: 14px;
+}
+
+.font-size-medium {
+  font-size: 16px;
+}
+
+.font-size-large {
+  font-size: 18px;
+}
+
+.font-size-extra-large {
+  font-size: 20px;
+}
+
+/* Estilos para notificações */
+.notification-success {
+  @apply bg-green-100 border-green-400 text-green-700;
+}
+
+.notification-error {
+  @apply bg-red-100 border-red-400 text-red-700;
+}
+
+.notification-warning {
+  @apply bg-yellow-100 border-yellow-400 text-yellow-700;
+}
+
+.notification-info {
+  @apply bg-blue-100 border-blue-400 text-blue-700;
+}
+
+/* Estilos para modais */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4;
+}
+
+/* Estilos para cards de configuração */
+.settings-card {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700;
+}
+
+/* Estilos para tabs ativas */
+.tab-active {
+  @apply bg-purple-600 text-white shadow-lg;
+}
+
+.tab-inactive {
+  @apply bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600;
+}
+
+/* Estilos para checkboxes personalizados */
+.custom-checkbox {
+  @apply rounded border-gray-300 text-purple-600 focus:ring-purple-500;
+}
+
+/* Estilos para selects personalizados */
+.custom-select {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white;
+}
+
+/* Estilos para botões de ação */
+.action-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 flex items-center gap-2;
+}
+
+.action-button-primary {
+  @apply bg-purple-600 hover:bg-purple-700 text-white;
+}
+
+.action-button-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white;
+}
+
+.action-button-danger {
+  @apply bg-red-600 hover:bg-red-700 text-white;
+}
+
+.action-button-success {
+  @apply bg-green-600 hover:bg-green-700 text-white;
+}
+
+/* Estilos para seções de configuração */
+.settings-section {
+  @apply space-y-4;
+}
+
+.settings-section-title {
+  @apply text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2;
+}
+
+.settings-section-label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
+}
+
+.settings-section-description {
+  @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Estilos para alertas informativos */
+.info-alert {
+  @apply p-4 rounded-lg;
+}
+
+.info-alert-purple {
+  @apply bg-purple-50 dark:bg-purple-900/20;
+}
+
+.info-alert-blue {
+  @apply bg-blue-50 dark:bg-blue-900/20;
+}
+
+.info-alert-green {
+  @apply bg-green-50 dark:bg-green-900/20;
+}
+
+.info-alert-orange {
+  @apply bg-orange-50 dark:bg-orange-900/20;
+}
+
+.info-alert-red {
+  @apply bg-red-50 dark:bg-red-900/20;
+}
+
+.info-alert-teal {
+  @apply bg-teal-50 dark:bg-teal-900/20;
+}
+
+.info-alert-indigo {
+  @apply bg-indigo-50 dark:bg-indigo-900/20;
+}
+
+/* Estilos para textos de alerta */
+.alert-text-purple {
+  @apply text-purple-800 dark:text-purple-200;
+}
+
+.alert-text-blue {
+  @apply text-blue-800 dark:text-blue-200;
+}
+
+.alert-text-green {
+  @apply text-green-800 dark:text-green-200;
+}
+
+.alert-text-orange {
+  @apply text-orange-800 dark:text-orange-200;
+}
+
+.alert-text-red {
+  @apply text-red-800 dark:text-red-200;
+}
+
+.alert-text-teal {
+  @apply text-teal-800 dark:text-teal-200;
+}
+
+.alert-text-indigo {
+  @apply text-indigo-800 dark:text-indigo-200;
+}
+
+/* Estilos para ícones coloridos */
+.icon-purple {
+  @apply text-purple-600;
+}
+
+.icon-blue {
+  @apply text-blue-600;
+}
+
+.icon-green {
+  @apply text-green-600;
+}
+
+.icon-orange {
+  @apply text-orange-600;
+}
+
+.icon-red {
+  @apply text-red-600;
+}
+
+.icon-teal {
+  @apply text-teal-600;
+}
+
+.icon-indigo {
+  @apply text-indigo-600;
+}
+
+/* Estilos para grid responsivo */
+.settings-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+}
+
+/* Estilos para espaçamento consistente */
+.settings-spacing {
+  @apply space-y-6;
+}
+
+/* Estilos para animações suaves */
+.smooth-transition {
+  @apply transition-all duration-300;
+}
+
+/* Estilos para hover states */
+.hover-lift {
+  @apply hover:transform hover:scale-105 hover:shadow-lg;
+}
+
+/* Estilos para focus states */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.focus-ring-purple {
+  @apply focus:ring-purple-500;
+}
+
+.focus-ring-blue {
+  @apply focus:ring-blue-500;
+}
+
+.focus-ring-green {
+  @apply focus:ring-green-500;
+}
+
+.focus-ring-orange {
+  @apply focus:ring-orange-500;
+}
+
+.focus-ring-red {
+  @apply focus:ring-red-500;
+}
+
+.focus-ring-teal {
+  @apply focus:ring-teal-500;
+}
+
+.focus-ring-indigo {
+  @apply focus:ring-indigo-500;
+} 

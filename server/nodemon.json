@@ -1,0 +1,10 @@
+{
+  "watch": ["*.js", "routes/", "middleware/", "config/", "services/"],
+  "ext": "js,json",
+  "ignore": ["node_modules/", "test/", "*.test.js"],
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": "3002"
+  },
+  "exec": "node index.js"
+} 
