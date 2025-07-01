@@ -6,7 +6,9 @@
       "src": "client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "installCommand": "cd client && npm ci --legacy-peer-deps",
+        "buildCommand": "cd client && npm run build"
       }
     },
     {
