@@ -7,8 +7,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "installCommand": "cd client && rm -rf node_modules package-lock.json && npm install --legacy-peer-deps --no-optional",
-        "buildCommand": "cd client && npm run build"
+        "installCommand": "cd client && chmod +x build.sh && ./build.sh"
       }
     },
     {
