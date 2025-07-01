@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaChartBar, FaUsers, FaLeaf, FaRecycle, FaSchool, FaCity, FaTrophy, FaMedal, FaAward, FaClock, FaTrendingUp, FaGlobe } from 'react-icons/fa';
+import { FaChartBar, FaUsers, FaLeaf, FaRecycle, FaSchool, FaCity, FaTrophy, FaMedal, FaAward, FaClock, FaChartLine, FaGlobe } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import Card from '../components/ui/Card';
 import { Loading } from '../components/ui/Loading';
@@ -232,7 +232,7 @@ export default function ImpactPage() {
       >
         <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800">
           <div className="flex items-center gap-2 mb-4">
-            <FaTrendingUp className="text-xl text-orange-600 dark:text-orange-400" />
+            <FaChartLine className="text-xl text-orange-600 dark:text-orange-400" />
             <h3 className="text-xl font-semibold text-orange-800 dark:text-orange-200">Crescimento Semanal</h3>
           </div>
           <div className="text-3xl font-bold text-orange-800 dark:text-orange-200 mb-2">
