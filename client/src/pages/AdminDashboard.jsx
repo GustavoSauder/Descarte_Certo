@@ -11,12 +11,14 @@ import {
   FaEdit,
   FaTrash
 } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
+import { useAppState } from '../hooks';
 import api from '../services/api';
 import { Loading } from '../components/ui/Loading';
 
 const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuth();
+  const { addNotification } = useAppState();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -95,7 +97,11 @@ const AdminDashboard = () => {
 
   const handleUserAction = async (userId, action) => {
     if (!isAuthenticated || user?.role !== 'ADMIN') {
-      alert('Faça login como administrador para executar esta ação!');
+              addNotification({
+          type: 'error',
+          title: 'Acesso Negado',
+          message: 'Faça login como administrador para executar esta ação!'
+        });
       return;
     }
     try {

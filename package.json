@@ -21,6 +21,7 @@
   "author": "Descarte Certo Team",
   "license": "MIT",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prisma": "^6.11.1"
   }
 }

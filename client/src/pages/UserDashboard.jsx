@@ -17,13 +17,26 @@ import {
   FaUsers,
   FaInfoCircle
 } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
 import { useAppState } from '../hooks';
 import Card from '../components/ui/Card';
 import Charts from '../components/ui/Charts';
 import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
+import { useUserMetrics } from '../hooks/useUserMetrics';
+import { supabase } from '../lib/supabase';
+
+function usePointsHistory(userId) {
+  const [pointsHistory, setPointsHistory] = useState([]);
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`http://localhost:4000/api/user/${userId}/points-history`)
+      .then(res => res.json())
+      .then(setPointsHistory);
+  }, [userId]);
+  return pointsHistory;
+}
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -31,37 +44,38 @@ const UserDashboard = () => {
   const [qrCode, setQrCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [history, setHistory] = useState([]);
   
   const { user, isAuthenticated } = useAuth();
   const { addNotification } = useAppState();
+  // Buscar métricas em tempo real do Supabase
+  const metrics = useUserMetrics(user);
+  const pointsHistory = usePointsHistory(user?.id);
 
-  // Dados simulados do usuário
-  const userStats = {
-    points: isAuthenticated ? (user?.points || 1250) : 850,
-    level: isAuthenticated ? (user?.level || 15) : 12,
-    experience: isAuthenticated ? 750 : 600,
-    nextLevel: 1000,
-    totalDisposals: isAuthenticated ? 45 : 32,
-    totalWeight: isAuthenticated ? 23.5 : 18.2,
-    achievements: isAuthenticated ? 8 : 6,
-    rewards: isAuthenticated ? 12 : 8,
-    co2Reduced: isAuthenticated ? 85.2 : 65.8,
-    treesEquivalent: isAuthenticated ? 8.5 : 6.2,
-    waterSaved: isAuthenticated ? 12500 : 9800
-  };
-
-  const recentDisposals = [
-    { id: 1, material: 'Plástico', weight: 2.5, points: 25, date: '2024-01-15' },
-    { id: 2, material: 'Vidro', weight: 1.8, points: 27, date: '2024-01-14' },
-    { id: 3, material: 'Papel', weight: 3.2, points: 16, date: '2024-01-13' },
-    { id: 4, material: 'Metal', weight: 1.5, points: 30, date: '2024-01-12' }
-  ];
+  useEffect(() => {
+    if (!user) return;
+    const fetchHistory = async () => {
+      const { data } = await supabase
+        .from('disposals') // ajuste para o nome real da tabela de histórico
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+      setHistory(data || []);
+    };
+    fetchHistory();
+    // Realtime subscription
+    const channel = supabase
+      .channel('public:disposals')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'disposals', filter: `user_id=eq.${user.id}` }, fetchHistory)
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, [user]);
 
   const achievements = [
-    { id: 1, title: 'Primeiro Descarte', description: 'Realizou o primeiro descarte', icon: FaLeaf, unlocked: true, progress: 100 },
-    { id: 2, title: 'Reciclador Bronze', description: 'Descarte 10 itens', icon: FaTrophy, unlocked: true, progress: 100 },
-    { id: 3, title: 'Reciclador Prata', description: 'Descarte 50 itens', icon: FaTrophy, unlocked: false, progress: 60 },
-    { id: 4, title: 'Reciclador Ouro', description: 'Descarte 100 itens', icon: FaTrophy, unlocked: false, progress: 30 }
+    { id: 1, title: 'Primeiro Descarte', description: 'Realizou o primeiro descarte', iconName: 'FaLeaf', unlocked: true, progress: 100 },
+    { id: 2, title: 'Reciclador Bronze', description: 'Descarte 10 itens', iconName: 'FaTrophy', unlocked: true, progress: 100 },
+    { id: 3, title: 'Reciclador Prata', description: 'Descarte 50 itens', iconName: 'FaTrophy', unlocked: false, progress: 60 },
+    { id: 4, title: 'Reciclador Ouro', description: 'Descarte 100 itens', iconName: 'FaTrophy', unlocked: false, progress: 30 }
   ];
 
   const rewards = [
@@ -118,6 +132,15 @@ const UserDashboard = () => {
     { id: 'about', label: 'Sobre', icon: FaInfoCircle }
   ];
 
+  // Gerar dados do gráfico de pontos a partir do histórico real
+  const pointsByMonth = history.reduce((acc, item) => {
+    const month = new Date(item.date).toLocaleString('pt-BR', { month: 'short' });
+    acc[month] = (acc[month] || 0) + item.points;
+    return acc;
+  }, {});
+  const labels = Object.keys(pointsByMonth);
+  const data = Object.values(pointsByMonth);
+
   const renderOverview = () => (
     <div className="space-y-6">
       {/* Cards de Estatísticas */}
@@ -129,7 +152,7 @@ const UserDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pontos</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{userStats.points}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.points ?? 0}</p>
             </div>
           </div>
         </Card>
@@ -141,7 +164,7 @@ const UserDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Nível</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{userStats.level}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.level ?? 1}</p>
             </div>
           </div>
         </Card>
@@ -153,7 +176,7 @@ const UserDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Descartes</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{userStats.totalDisposals}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.totalDisposals ?? 0}</p>
             </div>
           </div>
         </Card>
@@ -165,7 +188,7 @@ const UserDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Recompensas</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{userStats.rewards}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.rewards ?? 0}</p>
             </div>
           </div>
         </Card>
@@ -181,21 +204,21 @@ const UserDashboard = () => {
                 <FaTree className="w-5 h-5 text-green-600 mr-2" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">CO₂ Reduzido</span>
               </div>
-              <span className="font-semibold">{userStats.co2Reduced} kg</span>
+              <span className="font-semibold">{metrics?.co2Reduced ?? 0} kg</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <FaLeaf className="w-5 h-5 text-green-600 mr-2" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Árvores Equivalentes</span>
               </div>
-              <span className="font-semibold">{userStats.treesEquivalent}</span>
+              <span className="font-semibold">{metrics?.treesEquivalent ?? 0}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <FaWater className="w-5 h-5 text-blue-600 mr-2" />
                 <span className="text-sm text-gray-600 dark:text-gray-400">Água Economizada</span>
               </div>
-              <span className="font-semibold">{userStats.waterSaved}L</span>
+              <span className="font-semibold">{metrics?.waterSaved ?? 0}L</span>
             </div>
           </div>
         </Card>
@@ -205,18 +228,18 @@ const UserDashboard = () => {
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span>Nível {userStats.level}</span>
-                <span>{userStats.experience}/{userStats.nextLevel} XP</span>
+                <span>Nível {metrics?.level ?? 1}</span>
+                <span>{metrics?.experience ?? 0}/{metrics?.nextLevel ?? 1000} XP</span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div 
                   className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(userStats.experience / userStats.nextLevel) * 100}%` }}
+                  style={{ width: `${(metrics?.experience ?? 0 / metrics?.nextLevel ?? 1000) * 100}%` }}
                 />
               </div>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              {userStats.nextLevel - userStats.experience} XP para o próximo nível
+              {metrics?.nextLevel ?? 1000 - metrics?.experience ?? 0} XP para o próximo nível
             </p>
           </div>
         </Card>
@@ -229,15 +252,15 @@ const UserDashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-semibold text-green-800 dark:text-green-200">
-                {recentDisposals[0].material}
+                {history[0]?.material}
               </p>
               <p className="text-sm text-green-600 dark:text-green-300">
-                {recentDisposals[0].weight}kg • {recentDisposals[0].points} pontos
+                {history[0]?.weight}kg • {history[0]?.points} pontos
               </p>
             </div>
             <div className="text-right">
               <p className="text-sm text-green-600 dark:text-green-300">
-                {recentDisposals[0].date}
+                {history[0]?.date}
               </p>
             </div>
           </div>
@@ -253,10 +276,12 @@ const UserDashboard = () => {
         <Charts
           type="line"
           data={{
-            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+            labels: pointsHistory.map(item =>
+              new Date(item.month).toLocaleString('pt-BR', { month: 'short', year: '2-digit' })
+            ),
             datasets: [{
               label: 'Pontos Acumulados',
-              data: [100, 250, 400, 600, 850, 1250],
+              data: pointsHistory.map(item => Number(item.total_points)),
               borderColor: 'rgb(34, 197, 94)',
               backgroundColor: 'rgba(34, 197, 94, 0.1)',
               tension: 0.4
@@ -265,18 +290,12 @@ const UserDashboard = () => {
           options={{
             responsive: true,
             plugins: {
-              legend: {
-                position: 'top',
-              },
-              title: {
-                display: true,
-                text: 'Evolução dos Pontos'
-              }
+              legend: { position: 'top' },
+              title: { display: true, text: 'Evolução dos Pontos' }
             }
           }}
         />
       </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <h3 className="text-lg font-semibold mb-4">Como Ganhar Pontos</h3>
@@ -299,32 +318,15 @@ const UserDashboard = () => {
             </div>
           </div>
         </Card>
-
         <Card>
           <h3 className="text-lg font-semibold mb-4">Próximas Metas</h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm">1.500 pontos</span>
-              <span className="text-xs text-gray-500">Nível 16</span>
+              <span className="text-sm">{metrics?.nextLevel ?? 1000} pontos</span>
+              <span className="text-xs text-gray-500">Nível {metrics?.level ? metrics.level + 1 : 2}</span>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: '83%' }} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">2.000 pontos</span>
-              <span className="text-xs text-gray-500">Nível 17</span>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: '62%' }} />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm">3.000 pontos</span>
-              <span className="text-xs text-gray-500">Nível 18</span>
-            </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: '41%' }} />
+              <div className="bg-green-600 h-2 rounded-full" style={{ width: `${((metrics?.points ?? 0) / (metrics?.nextLevel ?? 1000)) * 100}%` }} />
             </div>
           </div>
         </Card>
@@ -352,11 +354,20 @@ const UserDashboard = () => {
                     ? 'bg-green-100 dark:bg-green-900'
                     : 'bg-gray-100 dark:bg-gray-700'
                 }`}>
-                  <achievement.icon className={`w-6 h-6 ${
-                    achievement.unlocked
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-gray-400 dark:text-gray-500'
-                  }`} />
+                  {achievement.iconName === 'FaLeaf' && (
+                    <FaLeaf className={`w-6 h-6 ${
+                      achievement.unlocked
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-gray-400 dark:text-gray-500'
+                    }`} />
+                  )}
+                  {achievement.iconName === 'FaTrophy' && (
+                    <FaTrophy className={`w-6 h-6 ${
+                      achievement.unlocked
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-gray-400 dark:text-gray-500'
+                    }`} />
+                  )}
                 </div>
                 <h4 className={`font-semibold mb-1 ${
                   achievement.unlocked
@@ -437,7 +448,7 @@ const UserDashboard = () => {
       <Card>
         <h3 className="text-lg font-semibold mb-4">Histórico Completo</h3>
         <Table
-          data={recentDisposals}
+          data={history}
           columns={[
             { key: 'material', label: 'Material' },
             { key: 'weight', label: 'Peso (kg)' },
@@ -523,28 +534,26 @@ const UserDashboard = () => {
       <div className="w-full">
         {/* Header */}
         <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
+          <div className="px-3 sm:px-6 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
                   Dashboard
                 </h1>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
                   {isAuthenticated 
                     ? `Bem-vindo de volta, ${user?.name || 'Usuário'}!`
                     : 'Visualizando dados de exemplo - Faça login para personalizar!'
                   }
                 </p>
               </div>
-              
-              <div className="flex items-center space-x-4">
-                <Button onClick={handleCollectPoints} variant="primary">
+              <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+                <Button onClick={handleCollectPoints} variant="primary" size="sm" className="w-full sm:w-auto text-xs sm:text-base px-2 sm:px-4 py-2">
                   <FaQrcode className="mr-2" />
                   Coletar Pontos
                 </Button>
-                
                 <button className="relative p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                  <FaBell size={20} />
+                  <FaBell size={18} />
                   {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                       {unreadCount}
@@ -556,8 +565,8 @@ const UserDashboard = () => {
           </div>
 
           {/* Tabs */}
-          <div className="px-6">
-            <nav className="flex space-x-8">
+          <div className="px-1 sm:px-6 overflow-x-auto scrollbar-thin scrollbar-thumb-green-200 dark:scrollbar-thumb-green-900">
+            <nav className="flex sm:space-x-8 gap-1 sm:gap-0 min-w-max">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -565,14 +574,14 @@ const UserDashboard = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`
-                      flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                      flex items-center py-2 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap
                       ${activeTab === tab.id
                         ? 'border-green-500 text-green-600 dark:text-green-400'
                         : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                       }
                     `}
                   >
-                    <Icon className="mr-2" size={16} />
+                    <Icon className="mr-1 sm:mr-2" size={14} />
                     {tab.label}
                   </button>
                 );

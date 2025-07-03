@@ -4,18 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api'
 
 // Função para obter token do localStorage
 const getAuthToken = () => {
-  const user = localStorage.getItem('user');
-  if (user) {
-    try {
-      const userData = JSON.parse(user);
-      // Gerar um token simples baseado no ID do usuário
-      return btoa(`${userData.id}:${userData.email}`);
-    } catch (error) {
-      console.error('Erro ao obter token:', error);
-      return null;
-    }
-  }
-  return null;
+  return localStorage.getItem('authToken');
 };
 
 // Interceptor para adicionar token JWT do localStorage
@@ -35,13 +24,14 @@ const getAuthHeaders = async () => {
 };
 
 // Função genérica para fazer requisições
-const apiRequest = async (endpoint, options = {}) => {
+export const apiRequest = async (endpoint, method = 'GET', data = null) => {
   try {
     const headers = await getAuthHeaders();
     
     const config = {
+      method,
       headers,
-      ...options
+      ...(data && { body: JSON.stringify(data) })
     };
 
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
@@ -62,24 +52,13 @@ const apiRequest = async (endpoint, options = {}) => {
 export const api = {
   get: (endpoint) => apiRequest(endpoint),
   
-  post: (endpoint, data) => apiRequest(endpoint, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  }),
+  post: (endpoint, data) => apiRequest(endpoint, 'POST', data),
   
-  put: (endpoint, data) => apiRequest(endpoint, {
-    method: 'PUT',
-    body: JSON.stringify(data)
-  }),
+  put: (endpoint, data) => apiRequest(endpoint, 'PUT', data),
   
-  delete: (endpoint) => apiRequest(endpoint, {
-    method: 'DELETE'
-  }),
+  delete: (endpoint) => apiRequest(endpoint, 'DELETE'),
   
-  patch: (endpoint, data) => apiRequest(endpoint, {
-    method: 'PATCH',
-    body: JSON.stringify(data)
-  })
+  patch: (endpoint, data) => apiRequest(endpoint, 'PATCH', data)
 };
 
 export default api; 

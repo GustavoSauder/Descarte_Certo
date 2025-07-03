@@ -59,23 +59,23 @@ const Home = () => {
       {/* Hero Section */}
       <section 
         ref={heroRef}
-        className="scroll-animation slide-up relative overflow-hidden py-20 px-4"
+        className="scroll-animation slide-up relative overflow-hidden py-12 sm:py-20 px-2 sm:px-4"
       >
         <div className="container mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
-            <FaLeaf className="text-6xl text-green-600 dark:text-green-400 mx-auto mb-6" />
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <FaLeaf className="text-5xl sm:text-6xl text-green-600 dark:text-green-400 mx-auto mb-4 sm:mb-6" />
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
               Descarte Certo
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-xl sm:max-w-3xl mx-auto">
               Transforme o descarte em pontos, conquistas e impacto ambiental real
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center">
               <Link to="/cadastro">
                 <Button size="lg" className="text-lg px-8 py-4">
                   Começar Agora
@@ -95,10 +95,10 @@ const Home = () => {
       {/* Stats Section */}
       <section 
         ref={statsRef}
-        className="scroll-animation slide-up py-16 px-4 bg-white dark:bg-gray-800"
+        className="scroll-animation slide-up py-8 sm:py-16 px-2 sm:px-4 bg-white dark:bg-gray-800"
       >
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
@@ -108,13 +108,13 @@ const Home = () => {
                   data-stagger-index={index}
                   className="scroll-animation slide-up text-center"
                 >
-                  <div className={`w-16 h-16 bg-${stat.color}-100 dark:bg-${stat.color}-900 rounded-full flex items-center justify-center mx-auto mb-4`}>
-                    <Icon className={`text-2xl text-${stat.color}-600 dark:text-${stat.color}-400`} />
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-${stat.color}-100 dark:bg-${stat.color}-900 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4`}>
+                    <Icon className={`text-xl sm:text-2xl text-${stat.color}-600 dark:text-${stat.color}-400`} />
                   </div>
-                  <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                     {stat.value}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400">
                     {stat.label}
                   </p>
                 </div>
@@ -127,19 +127,19 @@ const Home = () => {
       {/* Features Section */}
       <section 
         ref={featuresRef}
-        className="scroll-animation slide-up py-20 px-4"
+        className="scroll-animation slide-up py-10 sm:py-20 px-2 sm:px-4"
       >
         <div className="container mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4">
               Como Funciona
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-md sm:max-w-2xl mx-auto">
               Nossa plataforma torna a reciclagem divertida e recompensadora
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
@@ -147,15 +147,15 @@ const Home = () => {
                   key={index}
                   data-stagger-animation
                   data-stagger-index={index}
-                  className="scroll-animation scale-in text-center p-8 hover:shadow-xl transition-all duration-300"
+                  className="scroll-animation scale-in text-center p-5 sm:p-8 hover:shadow-xl transition-all duration-300"
                 >
-                  <div className={`w-16 h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900 rounded-full flex items-center justify-center mx-auto mb-6`}>
-                    <Icon className={`text-2xl text-${feature.color}-600 dark:text-${feature.color}-400`} />
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-6`}>
+                    <Icon className={`text-xl sm:text-2xl text-${feature.color}-600 dark:text-${feature.color}-400`} />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  <h3 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-white mb-2 sm:mb-4">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-xs sm:text-base text-gray-600 dark:text-gray-400">
                     {feature.description}
                   </p>
                 </Card>
@@ -168,7 +168,7 @@ const Home = () => {
       {/* Impact Section */}
       <section 
         ref={impactRef}
-        className="scroll-animation slide-up py-20 px-4 bg-green-600 dark:bg-green-800 text-white"
+        className="scroll-animation slide-up py-10 sm:py-20 px-2 sm:px-4 bg-green-600 dark:bg-green-800 text-white"
       >
         <div className="container mx-auto text-center">
           <motion.div
@@ -177,26 +177,26 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <FaHeart className="text-5xl mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <FaHeart className="text-4xl sm:text-5xl mx-auto mb-4 sm:mb-6" />
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
               Nosso Impacto Ambiental
             </h2>
-            <p className="text-xl mb-8 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl mb-6 sm:mb-8 max-w-md sm:max-w-3xl mx-auto">
               Juntos, já reciclamos mais de 542 toneladas de material, 
               economizando recursos naturais e reduzindo a poluição
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-6 sm:mt-12">
               <div className="text-center">
-                <div className="text-4xl font-bold mb-2">2.5k</div>
-                <div className="text-lg">Árvores Salvas</div>
+                <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">2.5k</div>
+                <div className="text-base sm:text-lg">Árvores Salvas</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold mb-2">15.2k</div>
-                <div className="text-lg">Litros de Água Economizados</div>
+                <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">15.2k</div>
+                <div className="text-base sm:text-lg">Litros de Água Economizados</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold mb-2">8.7k</div>
-                <div className="text-lg">kg de CO₂ Reduzidos</div>
+                <div className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">8.7k</div>
+                <div className="text-base sm:text-lg">kg de CO₂ Reduzidos</div>
               </div>
             </div>
           </motion.div>
@@ -206,34 +206,17 @@ const Home = () => {
       {/* CTA Section */}
       <section 
         ref={ctaRef}
-        className="scroll-animation bounce-in py-20 px-4"
+        className="scroll-animation slide-up py-8 sm:py-16 px-2 sm:px-4"
       >
         <div className="container mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Pronto para Fazer a Diferença?
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-              Junte-se a milhares de pessoas que já estão transformando o mundo através da reciclagem
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/cadastro">
-                <Button size="lg" className="text-lg px-8 py-4">
-                  Criar Conta Grátis
-                </Button>
-              </Link>
-              <Link to="/sobre-nos">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-4">
-                  Saiba Mais
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
+          <h2 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Pronto para transformar o mundo?
+          </h2>
+          <Link to="/cadastro">
+            <Button size="lg" className="text-lg px-8 py-4">
+              Começar Agora
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

@@ -67,70 +67,6 @@ const SupportPage = () => {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Dados mockados para demonstração
-  const mockTickets = [
-    {
-      id: 1,
-      subject: 'Problema com login no aplicativo',
-      message: 'Não consigo fazer login no aplicativo móvel. Aparece erro de conexão.',
-      category: 'technical',
-      priority: 'high',
-      status: 'open',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 horas atrás
-      updatedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutos atrás
-      responses: [
-        {
-          id: 1,
-          message: 'Olá! Vamos verificar seu problema. Pode tentar desinstalar e reinstalar o app?',
-          isStaff: true,
-          createdAt: new Date(Date.now() - 1000 * 60 * 60)
-        }
-      ]
-    },
-    {
-      id: 2,
-      subject: 'Dúvida sobre pontuação',
-      message: 'Como funciona o sistema de pontuação? Não entendi como ganhar mais pontos.',
-      category: 'general',
-      priority: 'medium',
-      status: 'in_progress',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 dia atrás
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 horas atrás
-      responses: [
-        {
-          id: 1,
-          message: 'Obrigado pela pergunta! Você ganha pontos reciclando diferentes tipos de materiais.',
-          isStaff: true,
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12)
-        },
-        {
-          id: 2,
-          message: 'Entendi! Obrigado pela explicação.',
-          isStaff: false,
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6)
-        }
-      ]
-    },
-    {
-      id: 3,
-      subject: 'Sugestão de melhoria',
-      message: 'Seria legal ter mais opções de recompensas na loja.',
-      category: 'suggestion',
-      priority: 'low',
-      status: 'closed',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 dias atrás
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 dia atrás
-      responses: [
-        {
-          id: 1,
-          message: 'Excelente sugestão! Estamos trabalhando em novas recompensas.',
-          isStaff: true,
-          createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24)
-        }
-      ]
-    }
-  ];
-
   const categories = [
     { value: 'technical', label: 'Problema Técnico', icon: FaBug },
     { value: 'general', label: 'Dúvida Geral', icon: FaQuestionCircle },
@@ -151,7 +87,7 @@ const SupportPage = () => {
   useEffect(() => {
     // Simular carregamento
     setTimeout(() => {
-      setTickets(mockTickets);
+      setTickets([]);
       setLoading(false);
     }, 1000);
   }, []);
@@ -255,64 +191,64 @@ const SupportPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="w-full max-w-6xl mx-auto py-8 px-4">
+      <div className="w-full max-w-6xl mx-auto py-4 sm:py-8 px-1 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
-              <FaHeadset className="text-4xl text-blue-500" />
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
+              <FaHeadset className="text-2xl sm:text-4xl text-blue-500" />
               Central de Suporte
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Estamos aqui para ajudar você com qualquer dúvida ou problema
             </p>
           </div>
           
           {/* Estatísticas */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="text-center p-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <FaTicketAlt className="text-xl text-blue-500" />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">{tickets.length}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <Card className="text-center p-2 sm:p-4">
+              <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <FaTicketAlt className="text-lg sm:text-xl text-blue-500" />
+                <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{tickets.length}</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total de Tickets</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total de Tickets</p>
             </Card>
             
-            <Card className="text-center p-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <FaClock className="text-xl text-yellow-500" />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">{openTickets}</span>
+            <Card className="text-center p-2 sm:p-4">
+              <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <FaClock className="text-lg sm:text-xl text-yellow-500" />
+                <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{openTickets}</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Abertos</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Abertos</p>
             </Card>
             
-            <Card className="text-center p-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <FaExclamationTriangle className="text-xl text-orange-500" />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">{inProgressTickets}</span>
+            <Card className="text-center p-2 sm:p-4">
+              <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <FaExclamationTriangle className="text-lg sm:text-xl text-orange-500" />
+                <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{inProgressTickets}</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Em Andamento</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Em Andamento</p>
             </Card>
             
-            <Card className="text-center p-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <FaCheck className="text-xl text-green-500" />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">{closedTickets}</span>
+            <Card className="text-center p-2 sm:p-4">
+              <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                <FaCheck className="text-lg sm:text-xl text-green-500" />
+                <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{closedTickets}</span>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Fechados</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Fechados</p>
             </Card>
           </div>
 
           {/* Ações e Filtros */}
-          <div className="flex flex-wrap gap-4 mb-6 justify-between items-center">
+          <div className="flex flex-wrap gap-2 mb-4 sm:mb-6 justify-between items-center text-xs sm:text-base">
             <div className="flex flex-wrap gap-2">
               <Button
                 onClick={() => setShowForm(!showForm)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-base"
               >
                 <FaPlus />
                 {showForm ? 'Cancelar' : 'Novo Ticket'}
@@ -329,7 +265,7 @@ const SupportPage = () => {
                   placeholder="Buscar tickets..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base"
                 />
               </div>
               
@@ -338,7 +274,7 @@ const SupportPage = () => {
                 name="filter"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="px-2 sm:px-4 py-1 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base"
               >
                 <option value="all">Todos os Status</option>
                 <option value="open">Abertos</option>
@@ -356,14 +292,14 @@ const SupportPage = () => {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <Card className="p-6 md:p-8 mb-8">
-                <h2 className="text-xl font-semibold mb-6 text-center text-gray-900 dark:text-white">
+              <Card className="p-4 sm:p-8 mb-6 sm:mb-8">
+                <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center text-gray-900 dark:text-white">
                   Novo Ticket de Suporte
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label htmlFor="support-subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="support-subject" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                         Assunto
                       </label>
                       <input 
@@ -371,14 +307,14 @@ const SupportPage = () => {
                         name="subject" 
                         value={form.subject} 
                         onChange={handleChange} 
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" 
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base focus:ring-2 focus:ring-blue-500" 
                         placeholder="Descreva brevemente o problema" 
                         required 
                       />
                     </div>
                     
                     <div>
-                      <label htmlFor="support-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <label htmlFor="support-category" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                         Categoria
                       </label>
                       <select 
@@ -386,7 +322,7 @@ const SupportPage = () => {
                         name="category" 
                         value={form.category} 
                         onChange={handleChange} 
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" 
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base focus:ring-2 focus:ring-blue-500" 
                         required
                       >
                         <option value="">Selecione a categoria</option>
@@ -398,7 +334,7 @@ const SupportPage = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="support-priority" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label htmlFor="support-priority" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                       Prioridade
                     </label>
                     <select 
@@ -406,7 +342,7 @@ const SupportPage = () => {
                       name="priority" 
                       value={form.priority} 
                       onChange={handleChange} 
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" 
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base focus:ring-2 focus:ring-blue-500" 
                       required
                     >
                       {priorities.map(pri => (
@@ -416,7 +352,7 @@ const SupportPage = () => {
                   </div>
                   
                   <div>
-                    <label htmlFor="support-message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label htmlFor="support-message" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                       Mensagem
                     </label>
                     <textarea 
@@ -424,15 +360,15 @@ const SupportPage = () => {
                       name="message" 
                       value={form.message} 
                       onChange={handleChange} 
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500" 
-                      rows={6}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-xs sm:text-base focus:ring-2 focus:ring-blue-500" 
+                      rows={4}
                       placeholder="Descreva detalhadamente seu problema ou dúvida" 
                       required 
                     />
                   </div>
                   
                   <div className="text-center">
-                    <Button type="submit" className="px-8 flex items-center gap-2">
+                    <Button type="submit" className="px-4 sm:px-8 flex items-center gap-1 sm:gap-2 text-xs sm:text-base">
                       <FaTicketAlt />
                       Enviar Ticket
                     </Button>
@@ -443,15 +379,15 @@ const SupportPage = () => {
           )}
           
           {/* Lista de Tickets */}
-          <div className="space-y-4">
-            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-center md:text-left text-gray-900 dark:text-white">
+          <div className="space-y-3 sm:space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2 sm:mb-4 text-center md:text-left text-gray-900 dark:text-white">
               Meus Tickets
             </h2>
             
             {filteredTickets.length === 0 ? (
-              <Card className="text-center py-12">
-                <FaTicketAlt className="text-6xl text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
+              <Card className="text-center py-8 sm:py-12">
+                <FaTicketAlt className="text-4xl sm:text-6xl text-gray-300 dark:text-gray-600 mx-auto mb-2 sm:mb-4" />
+                <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">
                   {searchQuery 
                     ? 'Nenhum ticket encontrado com essa busca.'
                     : 'Você ainda não tem tickets de suporte.'
@@ -469,16 +405,16 @@ const SupportPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <Card className="p-6 hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => handleViewTicket(ticket)}>
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-4 flex-1">
-                          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
-                            <CategoryIcon className="text-xl text-blue-600 dark:text-blue-400" />
+                    <Card className="p-3 sm:p-6 hover:shadow-lg transition-all duration-300 cursor-pointer rounded-xl sm:rounded-2xl flex flex-col gap-2 sm:gap-4" onClick={() => handleViewTicket(ticket)}>
+                      <div className="flex items-start justify-between gap-2 sm:gap-4">
+                        <div className="flex items-start gap-2 sm:gap-4 flex-1">
+                          <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                            <CategoryIcon className="text-lg sm:text-xl text-blue-600 dark:text-blue-400" />
                           </div>
                           
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                            <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2 flex-wrap">
+                              <h3 className="font-semibold text-base sm:text-lg text-gray-900 dark:text-white">
                                 {ticket.subject}
                               </h3>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
@@ -489,11 +425,11 @@ const SupportPage = () => {
                               </span>
                             </div>
                             
-                            <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-base mb-2 sm:mb-3 line-clamp-2">
                               {ticket.message}
                             </p>
                             
-                            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                               <span>{getCategoryLabel(ticket.category)}</span>
                               <span>•</span>
                               <span>{formatTimeAgo(ticket.updatedAt)}</span>

@@ -4,74 +4,36 @@ import { FaTrophy, FaMedal, FaAward, FaCrown, FaStar, FaChartLine, FaUsers, FaMa
 import Table from '../components/ui/Table';
 import { Loading } from '../components/ui/Loading';
 import Card from '../components/ui/Card';
-import { useScrollAnimation, useStaggerAnimation, useAuth } from '../hooks';
+import { useScrollAnimation, useStaggerAnimation } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../lib/supabase';
 
 const RankingPage = () => {
   const { isAuthenticated } = useAuth();
-  const [rankings, setRankings] = useState({
-    recycling: [],
-    collection: [],
-    schools: [],
-    cities: [],
-    impact: []
-  });
+  const [ranking, setRanking] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('recycling');
 
   useEffect(() => {
-    loadAllRankings();
-  }, []);
-
-  const loadAllRankings = async () => {
-    try {
+    async function fetchRanking() {
       setLoading(true);
-      // Simular carregamento de dados reais do backend
-      const mockData = {
-        recycling: [
-          { id: 1, name: 'João Silva', points: 12500, city: 'São Paulo', school: 'Escola Verde', level: 15, disposals: 45, impact: '2.5 toneladas' },
-          { id: 2, name: 'Maria Santos', points: 11800, city: 'Rio de Janeiro', school: 'Colégio Sustentável', level: 14, disposals: 42, impact: '2.1 toneladas' },
-          { id: 3, name: 'Pedro Costa', points: 11200, city: 'Belo Horizonte', school: 'Instituto Ecológico', level: 13, disposals: 38, impact: '1.8 toneladas' },
-          { id: 4, name: 'Ana Oliveira', points: 10500, city: 'Curitiba', school: 'Escola Verde', level: 12, disposals: 35, impact: '1.6 toneladas' },
-          { id: 5, name: 'Carlos Lima', points: 9800, city: 'Porto Alegre', school: 'Colégio Sustentável', level: 11, disposals: 32, impact: '1.4 toneladas' },
-        ],
-        collection: [
-          { id: 1, name: 'Escola Verde', city: 'São Paulo', collections: 156, students: 1200, impact: '15.2 toneladas' },
-          { id: 2, name: 'Colégio Sustentável', city: 'Rio de Janeiro', collections: 142, students: 980, impact: '12.8 toneladas' },
-          { id: 3, name: 'Instituto Ecológico', city: 'Belo Horizonte', collections: 128, students: 850, impact: '10.5 toneladas' },
-          { id: 4, name: 'Escola Futuro', city: 'Curitiba', collections: 115, students: 720, impact: '8.9 toneladas' },
-          { id: 5, name: 'Colégio Inovação', city: 'Porto Alegre', collections: 98, students: 650, impact: '7.2 toneladas' },
-        ],
-        schools: [
-          { id: 1, name: 'Escola Verde', city: 'São Paulo', students: 1200, impact: '15.2 toneladas', projects: 8, rating: 4.8 },
-          { id: 2, name: 'Colégio Sustentável', city: 'Rio de Janeiro', students: 980, impact: '12.8 toneladas', projects: 6, rating: 4.6 },
-          { id: 3, name: 'Instituto Ecológico', city: 'Belo Horizonte', students: 850, impact: '10.5 toneladas', projects: 5, rating: 4.4 },
-          { id: 4, name: 'Escola Futuro', city: 'Curitiba', students: 720, impact: '8.9 toneladas', projects: 4, rating: 4.2 },
-          { id: 5, name: 'Colégio Inovação', city: 'Porto Alegre', students: 650, impact: '7.2 toneladas', projects: 3, rating: 4.0 },
-        ],
-        cities: [
-          { id: 1, name: 'São Paulo', schools: 45, students: 12500, impact: '156.8 toneladas', participation: 89 },
-          { id: 2, name: 'Rio de Janeiro', schools: 38, students: 9800, impact: '128.5 toneladas', participation: 76 },
-          { id: 3, name: 'Belo Horizonte', schools: 32, students: 8200, impact: '98.2 toneladas', participation: 68 },
-          { id: 4, name: 'Curitiba', schools: 28, students: 7200, impact: '85.4 toneladas', participation: 72 },
-          { id: 5, name: 'Porto Alegre', schools: 25, students: 6500, impact: '72.1 toneladas', participation: 65 },
-        ],
-        impact: [
-          { id: 1, name: 'João Silva', totalImpact: '2.5 toneladas', projects: 12, hours: 180, innovation: 8 },
-          { id: 2, name: 'Maria Santos', totalImpact: '2.1 toneladas', projects: 10, hours: 165, innovation: 7 },
-          { id: 3, name: 'Pedro Costa', totalImpact: '1.8 toneladas', projects: 8, hours: 142, innovation: 6 },
-          { id: 4, name: 'Ana Oliveira', totalImpact: '1.6 toneladas', projects: 7, hours: 128, innovation: 5 },
-          { id: 5, name: 'Carlos Lima', totalImpact: '1.4 toneladas', projects: 6, hours: 115, innovation: 4 },
-        ]
-      };
-      
-      setRankings(mockData);
-    } catch (err) {
-      setError(err.message);
-    } finally {
+      const { data, error } = await supabase
+        .from('user_metrics')
+        .select('user_id, points, level')
+        .order('points', { ascending: false });
+      if (error) setError(error.message);
+      else setRanking(data || []);
       setLoading(false);
     }
-  };
+    fetchRanking();
+    // Realtime subscription
+    const channel = supabase
+      .channel('public:user_metrics')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_metrics' }, fetchRanking)
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, []);
 
   const getPositionIcon = (position) => {
     switch (position) {
@@ -100,20 +62,16 @@ const RankingPage = () => {
   ];
 
   const getTabData = () => {
-    const data = rankings[activeTab] || [];
-    return data.slice(0, 3); // Top 3 para o podium
+    const data = ranking.slice(0, 3); // Top 3 para o podium
+    return data;
   };
 
   const getTableData = () => {
-    const data = rankings[activeTab] || [];
-    return data.map((item, index) => ({
+    return ranking.map((item, index) => ({
       position: index + 1,
-      name: item.name,
-      points: item.points || item.collections || item.students || item.totalImpact,
-      city: item.city,
-      school: item.school,
-      impact: item.impact || item.projects || item.participation || item.hours,
-      level: item.level || item.rating || item.innovation
+      name: item.user_id,
+      points: item.points,
+      level: item.level
     }));
   };
 
@@ -238,7 +196,7 @@ const RankingPage = () => {
                 const isFirst = position === 1;
                 
                 return (
-                  <div key={item.id} className={`order-${position} ${isFirst ? 'md:order-2' : position === 2 ? 'md:order-1' : 'md:order-3'}`}>
+                  <div key={item.user_id} className={`order-${position} ${isFirst ? 'md:order-2' : position === 2 ? 'md:order-1' : 'md:order-3'}`}>
                     <Card className={`text-center p-6 relative ${isFirst ? 'bg-gradient-to-b from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800' : ''}`}>
                       <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                         {getPositionIcon(position)}
@@ -252,18 +210,14 @@ const RankingPage = () => {
                           {position}
                         </div>
                         <h3 className={`text-${isFirst ? 'xl' : 'lg'} font-semibold text-gray-900 dark:text-white mb-2`}>
-                          {item.name}
+                          {item.user_id}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-2">{item.city}</p>
+                        <p className="text-gray-600 dark:text-gray-400 mb-2">{item.level}</p>
                         <p className={`text-${isFirst ? '3xl' : '2xl'} font-bold ${
                           isFirst ? 'text-yellow-600 dark:text-yellow-400' : 
                           position === 2 ? 'text-gray-500 dark:text-gray-400' : 'text-amber-600 dark:text-amber-400'
                         }`}>
-                          {activeTab === 'recycling' ? `${item.points} pts` :
-                           activeTab === 'collection' ? `${item.collections} coletas` :
-                           activeTab === 'schools' ? `${item.students} alunos` :
-                           activeTab === 'cities' ? `${item.schools} escolas` :
-                           `${item.totalImpact}`}
+                          {item.points} pts
                         </p>
                       </div>
                     </Card>
@@ -288,31 +242,10 @@ const RankingPage = () => {
                 columns={[
                   { key: 'position', label: 'Posição', width: 'w-20' },
                   { key: 'name', label: 'Nome', width: 'flex-1' },
-                  { key: 'points', label: activeTab === 'recycling' ? 'Pontos' : 
-                                         activeTab === 'collection' ? 'Coletas' :
-                                         activeTab === 'schools' ? 'Alunos' :
-                                         activeTab === 'cities' ? 'Escolas' : 'Impacto', width: 'w-32' },
-                  { key: 'city', label: 'Cidade', width: 'w-32' },
-                  { key: 'impact', label: activeTab === 'recycling' ? 'Impacto' :
-                                         activeTab === 'collection' ? 'Estudantes' :
-                                         activeTab === 'schools' ? 'Projetos' :
-                                         activeTab === 'cities' ? 'Participação' : 'Horas', width: 'w-32' },
-                  { key: 'level', label: activeTab === 'recycling' ? 'Nível' :
-                                       activeTab === 'collection' ? 'Impacto' :
-                                       activeTab === 'schools' ? 'Avaliação' :
-                                       activeTab === 'cities' ? 'Estudantes' : 'Inovação', width: 'w-32' }
+                  { key: 'points', label: 'Pontos', width: 'w-32' },
+                  { key: 'level', label: 'Nível', width: 'w-32' }
                 ]}
-                data={getTableData().map((item, index) => ({
-                  ...item,
-                  position: (
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPositionBadge(item.position)}`}>
-                        {item.position}º
-                      </span>
-                      {getPositionIcon(item.position)}
-                    </div>
-                  )
-                }))}
+                data={getTableData()}
               />
             </motion.div>
 

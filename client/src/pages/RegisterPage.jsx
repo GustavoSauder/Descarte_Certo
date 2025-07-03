@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaLeaf, FaGoogle, FaSpinner, FaCheck } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase.js';
 import PasswordInput from '../components/ui/PasswordInput';
 import * as Yup from 'yup';

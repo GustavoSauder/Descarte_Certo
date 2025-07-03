@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaComment, FaUser, FaEnvelope, FaEdit, FaTrash, FaEllipsisH, FaCheck, FaTimes } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
 import { useAppState } from '../hooks';
 import Button from './ui/Button';
-import Card from './ui/Card';
+import { Card } from './ui';
 import { useTranslation } from 'react-i18next';
 
 const Comments = () => {

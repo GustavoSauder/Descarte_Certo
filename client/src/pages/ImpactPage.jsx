@@ -16,8 +16,9 @@ export default function ImpactPage() {
   const loadImpactData = async () => {
     try {
       setLoading(true);
-      // Remover mockData e simulações, e buscar dados reais do backend/Supabase.
-      // ... existing code ...
+      // Remover mockData e simulações, e buscar dados reais do backend/Supabase
+      // Exemplo:
+      const impactData = {};
     } catch (error) {
       console.error('Erro ao carregar dados de impacto:', error);
     } finally {

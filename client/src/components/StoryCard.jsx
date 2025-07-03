@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { motion } from 'framer-motion';
 import { FaHeart, FaTrash, FaUser, FaLeaf, FaClock, FaEye } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAppState } from '../hooks';
 import Button from './ui/Button';
 
 export default function StoryCard({ story, onDelete, onLike }) {
   const { user } = useAuth();
+  const { addNotification } = useAppState();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -25,7 +28,11 @@ export default function StoryCard({ story, onDelete, onLike }) {
 
   const handleLike = async () => {
     if (!user) {
-      alert('Você precisa estar logado para curtir uma história');
+              addNotification({
+          type: 'error',
+          title: 'Login Necessário',
+          message: 'Você precisa estar logado para curtir uma história'
+        });
       return;
     }
     try {

@@ -1,57 +1,60 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { apiRequest } from '../services/api';
 
-const AuthContext = createContext({});
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('AuthProvider: Iniciando verificação de sessão');
-    
-    // Verificar se há um usuário salvo no localStorage
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const getSession = async () => {
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
-        console.log('AuthProvider: Usuário carregado do localStorage:', userData);
+        // Verificar se há token no localStorage
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          // Verificar se o token ainda é válido
+          const response = await apiRequest('/auth/verify', 'GET');
+          if (response.success) {
+            setUser(response.user);
+          } else {
+            localStorage.removeItem('authToken');
+          }
+        }
       } catch (error) {
-        console.error('AuthProvider: Erro ao carregar usuário do localStorage:', error);
-        localStorage.removeItem('user');
+        console.error('AuthProvider: Erro ao verificar sessão:', error);
+        localStorage.removeItem('authToken');
+      } finally {
+        setLoading(false);
       }
-    }
-    
-    setLoading(false);
+    };
+
+    getSession();
   }, []);
 
   const signUp = async (email, password, userData) => {
     try {
       console.log('signUp: Tentando cadastrar usuário:', email);
       
-      // Simular cadastro local
-      const newUser = {
-        id: Date.now(),
-        email,
+      const response = await apiRequest('/auth/register', 'POST', {
         name: userData?.name || email.split('@')[0],
-        school: userData?.school || null,
-        grade: userData?.grade || null,
-        role: 'USER',
-        points: 0,
-        level: 1,
-        createdAt: new Date().toISOString()
-      };
+        email,
+        password,
+        school: userData?.school || '',
+        grade: userData?.grade || ''
+      });
       
-      // Salvar no localStorage
-      localStorage.setItem('user', JSON.stringify(newUser));
-      setUser(newUser);
-      
-      console.log('signUp: Usuário cadastrado:', newUser);
-      return { data: { user: newUser }, error: null };
+      if (response.success) {
+        console.log('signUp: Usuário cadastrado com sucesso');
+        return { data: response, error: null };
+      } else {
+        console.error('signUp: Erro no cadastro:', response.error);
+        return { data: null, error: response.error };
+      }
     } catch (error) {
       console.error('signUp: Erro:', error);
-      return { data: null, error };
+      return { data: null, error: error.message };
     }
   };
 
@@ -59,28 +62,24 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('signIn: Tentando fazer login com:', email);
       
-      // Simular login local - aceitar qualquer email/senha para teste
-      const userData = {
-        id: Date.now(),
+      const response = await apiRequest('/auth/login', 'POST', {
         email,
-        name: email.split('@')[0],
-        school: null,
-        grade: null,
-        role: 'USER',
-        points: 100,
-        level: 1,
-        createdAt: new Date().toISOString()
-      };
+        password
+      });
       
-      // Salvar no localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-      
-      console.log('signIn: Usuário logado:', userData);
-      return { data: { user: userData }, error: null };
+      if (response.success) {
+        // Salvar token no localStorage
+        localStorage.setItem('authToken', response.token);
+        setUser(response.user);
+        console.log('signIn: Usuário logado com sucesso');
+        return { data: response, error: null };
+      } else {
+        console.error('signIn: Erro no login:', response.error);
+        return { data: null, error: response.error };
+      }
     } catch (error) {
       console.error('signIn: Erro no login:', error);
-      return { data: null, error };
+      return { data: null, error: error.message };
     }
   };
 
@@ -88,10 +87,9 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log('signOut: Tentando fazer logout');
       
-      // Remover do localStorage
-      localStorage.removeItem('user');
+      // Remover token do localStorage
+      localStorage.removeItem('authToken');
       setUser(null);
-      
       console.log('signOut: Logout realizado com sucesso');
     } catch (error) {
       console.error('signOut: Erro ao fazer logout:', error);
@@ -101,18 +99,24 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (email) => {
     try {
       console.log('resetPassword: Reset de senha para:', email);
-      return { error: null };
+      
+      const response = await apiRequest('/auth/reset-password', 'POST', { email });
+      
+      return { error: response.success ? null : response.error };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   };
 
   const updatePassword = async (password) => {
     try {
-      console.log('updatePassword: Senha atualizada');
-      return { error: null };
+      console.log('updatePassword: Atualizando senha');
+      
+      const response = await apiRequest('/auth/update-password', 'PUT', { password });
+      
+      return { error: response.success ? null : response.error };
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   };
 

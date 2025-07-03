@@ -499,4 +499,38 @@
 
 .focus-ring-indigo {
   @apply focus:ring-indigo-500;
+}
+
+body {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 13px;
+  }
+  body {
+    padding: 0 2px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0.5em;
+  }
+  .container, .max-w-md, .max-w-xs, .max-w-lg, .max-w-xl {
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+  }
+}
+
+/* Esconde a barra de rolagem horizontal, mas mantém a rolagem */
+.hide-scrollbar {
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  height: 0px;
+  background: transparent;
 } 

@@ -151,6 +151,22 @@ router.post('/register', [
         emailConfirmationToken
       }
     });
+    // Associar conquistas do catálogo ao novo usuário
+    const catalog = await prisma.achievementCatalog.findMany();
+    await Promise.all(
+      catalog.map(c =>
+        prisma.achievement.create({
+          data: {
+            userId: user.id,
+            title: c.title,
+            description: c.description,
+            points: c.points,
+            icon: c.icon,
+            badgeType: c.badgeType,
+          }
+        })
+      )
+    );
     // Enviar e-mail de confirmação
     const confirmUrl = `${process.env.FRONTEND_URL}/confirmar-email?token=${emailConfirmationToken}`;
     await NotificationService.sendEmail(
@@ -264,6 +280,23 @@ router.post('/login', [
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Verificação de token
+router.get('/verify', authenticateToken, async (req, res) => {
+  try {
+    // Se chegou até aqui, o token é válido
+    res.json({ 
+      success: true,
+      user: req.user
+    });
+  } catch (error) {
+    console.error('Erro ao verificar token:', error);
+    res.status(401).json({ 
+      success: false,
+      error: 'Token inválido' 
+    });
   }
 });
 

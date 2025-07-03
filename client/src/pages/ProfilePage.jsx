@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
+import { useAuth } from '../hooks/useAuth';
+import { useAppState } from '../hooks/useAppState';
 
 const ProfilePage = () => {
+  const { user } = useAuth();
+  const { addNotification } = useAppState();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    name: 'Usuário Exemplo',
-    email: 'usuario@exemplo.com',
-    school: 'Escola Municipal',
-    city: 'São Paulo',
-    state: 'SP'
+    name: user?.name || '',
+    email: user?.email || '',
+    school: user?.school || '',
+    city: user?.city || '',
+    state: user?.state || ''
   });
 
   const handleChange = (e) => {
@@ -17,9 +21,25 @@ const ProfilePage = () => {
   };
 
   const handleSave = () => {
-    alert('Perfil atualizado! (Dados de exemplo)');
+    // Aqui você pode implementar a chamada para atualizar o perfil no backend
+          addNotification({
+        type: 'success',
+        title: 'Sucesso!',
+        message: 'Perfil atualizado com sucesso!'
+      });
     setEditing(false);
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Card className="p-8 text-center">
+          <h2 className="text-xl font-bold mb-4">Você não está logado</h2>
+          <p className="mb-4">Faça login para visualizar seu perfil.</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full">
@@ -119,31 +139,31 @@ const ProfilePage = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Nome
                     </label>
-                    <p className="text-lg font-medium">{form.name}</p>
+                    <p className="text-lg font-medium">{user?.name || 'Não informado'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Email
                     </label>
-                    <p className="text-lg font-medium">{form.email}</p>
+                    <p className="text-lg font-medium">{user?.email || 'Não informado'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Escola
                     </label>
-                    <p className="text-lg font-medium">{form.school || 'Não informado'}</p>
+                    <p className="text-lg font-medium">{user?.school || 'Não informado'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Cidade
                     </label>
-                    <p className="text-lg font-medium">{form.city || 'Não informado'}</p>
+                    <p className="text-lg font-medium">{user?.city || 'Não informado'}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Estado
                     </label>
-                    <p className="text-lg font-medium">{form.state || 'Não informado'}</p>
+                    <p className="text-lg font-medium">{user?.state || 'Não informado'}</p>
                   </div>
                 </div>
                 

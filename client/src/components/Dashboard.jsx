@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Card, 
@@ -30,6 +29,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
+
+  // Todos os dados devem ser buscados do Supabase em tempo real
 
   // Dados de exemplo para gráficos
   const disposalData = [

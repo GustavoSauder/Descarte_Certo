@@ -11,7 +11,7 @@ import {
   FaLeaf,
   FaCoins
 } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
 import { useAppState } from '../hooks';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -59,8 +59,7 @@ const CollectPointsPage = () => {
       
       // Simular detecção de QR Code após 3 segundos
       setTimeout(() => {
-        const mockCode = 'QR-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-        setScannedCode(mockCode);
+        setScannedCode('');
         stopScanning();
       }, 3000);
       

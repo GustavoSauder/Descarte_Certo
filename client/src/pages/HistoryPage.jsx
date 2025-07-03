@@ -9,30 +9,10 @@ import { disposalService } from '../services';
 
 const HistoryPage = () => {
   const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // all, week, month, year
   const [materialFilter, setMaterialFilter] = useState('all');
-
-  useEffect(() => {
-    disposalService.listDisposals()
-      .then(res => setHistory(res.data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <Loading text="Carregando histórico..." />;
-  if (error) return <div className="text-red-500 text-center">{error}</div>;
-
-  // Dados de exemplo para demonstração
-  const mockHistory = [
-    { id: 1, createdAt: '2024-01-15', materialType: 'Plástico', weight: 2.5, points: 25, location: 'São Paulo, SP' },
-    { id: 2, createdAt: '2024-01-14', materialType: 'Papel', weight: 1.8, points: 14, location: 'São Paulo, SP' },
-    { id: 3, createdAt: '2024-01-13', materialType: 'Vidro', weight: 3.2, points: 48, location: 'São Paulo, SP' },
-    { id: 4, createdAt: '2024-01-12', materialType: 'Metal', weight: 1.5, points: 18, location: 'São Paulo, SP' },
-    { id: 5, createdAt: '2024-01-11', materialType: 'Plástico', weight: 2.0, points: 20, location: 'São Paulo, SP' },
-    { id: 6, createdAt: '2024-01-10', materialType: 'Papel', weight: 2.2, points: 18, location: 'São Paulo, SP' },
-  ];
 
   const getMaterialIcon = (material) => {
     switch (material.toLowerCase()) {
@@ -54,11 +34,11 @@ const HistoryPage = () => {
     }
   };
 
-  const totalWeight = mockHistory.reduce((sum, item) => sum + item.weight, 0);
-  const totalPoints = mockHistory.reduce((sum, item) => sum + item.points, 0);
-  const totalDisposals = mockHistory.length;
+  const totalWeight = history.reduce((sum, item) => sum + item.weight, 0);
+  const totalPoints = history.reduce((sum, item) => sum + item.points, 0);
+  const totalDisposals = history.length;
 
-  const materialStats = mockHistory.reduce((acc, item) => {
+  const materialStats = history.reduce((acc, item) => {
     const material = item.materialType;
     if (!acc[material]) {
       acc[material] = { weight: 0, count: 0, points: 0 };
@@ -210,7 +190,7 @@ const HistoryPage = () => {
               { key: 'points', label: 'Pontos', sortable: true },
               { key: 'location', label: 'Localização', sortable: false }
             ]}
-            data={mockHistory.map(item => ({
+            data={history.map(item => ({
               ...item,
               date: new Date(item.createdAt).toLocaleDateString('pt-BR'),
               material: (

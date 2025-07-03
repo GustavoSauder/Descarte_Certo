@@ -365,4 +365,17 @@ model CommentReaction {
 
   @@unique([userId, commentId])
   @@map("comment_reactions")
+}
+
+model AchievementCatalog {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  points      Int      @default(0)
+  icon        String?
+  badgeType   String   @default("BRONZE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("achievement_catalog")
 } 

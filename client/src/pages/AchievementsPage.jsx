@@ -24,174 +24,79 @@ import {
   FaUnlock,
   FaPercentage,
   FaInfinity,
-  FaRocket
+  FaRocket,
+  FaFilter,
+  FaSearch,
+  FaSort,
+  FaEye,
+  FaShare,
+  FaDownload,
+  FaPrint,
+  FaEnvelope,
+  FaWhatsapp,
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaCog,
+  FaPalette,
+  FaHome,
+  FaGamepad,
+  FaBook,
+  FaPencilAlt,
+  FaCar,
+  FaBicycle,
+  FaUmbrella,
+  FaMugHot,
+  FaKey,
+  FaGift
 } from 'react-icons/fa';
 import { achievementService } from '../services';
 import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
 import { Loading } from '../components/ui/Loading';
+import Modal from '../components/ui/Modal';
+import Sidebar from '../components/ui/Sidebar';
+import ScrollAnimation from '../components/ui/ScrollAnimation';
+import { useAuth } from '../hooks/useAuth';
+import { useAppState } from '../hooks/useAppState.jsx';
 
 const AchievementsPage = () => {
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
-
-  // Dados mockados para demonstração
-  const mockAchievements = [
-    {
-      id: 1,
-      title: 'Primeiro Passo',
-      description: 'Complete seu primeiro descarte de recicláveis',
-      icon: FaSeedling,
-      badgeType: 'Iniciante',
-      progress: 100,
-      maxProgress: 1,
-      unlocked: true,
-      unlockedAt: '2024-01-15',
-      rarity: 'common',
-      points: 10
-    },
-    {
-      id: 2,
-      title: 'Reciclador Bronze',
-      description: 'Descarte 50 itens recicláveis',
-      icon: FaMedal,
-      badgeType: 'Bronze',
-      progress: 35,
-      maxProgress: 50,
-      unlocked: false,
-      rarity: 'uncommon',
-      points: 50
-    },
-    {
-      id: 3,
-      title: 'Reciclador Prata',
-      description: 'Descarte 100 itens recicláveis',
-      icon: FaMedal,
-      badgeType: 'Prata',
-      progress: 35,
-      maxProgress: 100,
-      unlocked: false,
-      rarity: 'rare',
-      points: 100
-    },
-    {
-      id: 4,
-      title: 'Reciclador Ouro',
-      description: 'Descarte 250 itens recicláveis',
-      icon: FaTrophy,
-      badgeType: 'Ouro',
-      progress: 35,
-      maxProgress: 250,
-      unlocked: false,
-      rarity: 'epic',
-      points: 250
-    },
-    {
-      id: 5,
-      title: 'Reciclador Diamante',
-      description: 'Descarte 500 itens recicláveis',
-      icon: FaGem,
-      badgeType: 'Diamante',
-      progress: 35,
-      maxProgress: 500,
-      unlocked: false,
-      rarity: 'legendary',
-      points: 500
-    },
-    {
-      id: 6,
-      title: 'Semana Verde',
-      description: 'Recicle por 7 dias consecutivos',
-      icon: FaCalendarAlt,
-      badgeType: 'Consistência',
-      progress: 3,
-      maxProgress: 7,
-      unlocked: false,
-      rarity: 'uncommon',
-      points: 75
-    },
-    {
-      id: 7,
-      title: 'Mês Sustentável',
-      description: 'Recicle por 30 dias consecutivos',
-      icon: FaCalendarAlt,
-      badgeType: 'Dedicação',
-      progress: 3,
-      maxProgress: 30,
-      unlocked: false,
-      rarity: 'rare',
-      points: 200
-    },
-    {
-      id: 8,
-      title: 'Amigo da Terra',
-      description: 'Descarte 10 tipos diferentes de materiais',
-      icon: FaLeaf,
-      badgeType: 'Variedade',
-      progress: 6,
-      maxProgress: 10,
-      unlocked: false,
-      rarity: 'uncommon',
-      points: 80
-    },
-    {
-      id: 9,
-      title: 'Influenciador Verde',
-      description: 'Convide 5 amigos para a plataforma',
-      icon: FaUsers,
-      badgeType: 'Social',
-      progress: 2,
-      maxProgress: 5,
-      unlocked: false,
-      rarity: 'rare',
-      points: 150
-    },
-    {
-      id: 10,
-      title: 'Educador Ambiental',
-      description: 'Complete 10 lições educativas',
-      icon: FaLightbulb,
-      badgeType: 'Educação',
-      progress: 4,
-      maxProgress: 10,
-      unlocked: false,
-      rarity: 'uncommon',
-      points: 100
-    },
-    {
-      id: 11,
-      title: 'Desafiador',
-      description: 'Complete 5 desafios mensais',
-      icon: FaRocket,
-      badgeType: 'Desafio',
-      progress: 2,
-      maxProgress: 5,
-      unlocked: false,
-      rarity: 'epic',
-      points: 300
-    },
-    {
-      id: 12,
-      title: 'Líder do Ranking',
-      description: 'Fique em 1º lugar no ranking por uma semana',
-      icon: FaCrown,
-      badgeType: 'Liderança',
-      progress: 0,
-      maxProgress: 1,
-      unlocked: false,
-      rarity: 'legendary',
-      points: 1000
-    }
-  ];
+  const { user } = useAuth();
+  const { addNotification } = useAppState();
 
   useEffect(() => {
-    // Simular carregamento
-    setTimeout(() => {
-      setAchievements(mockAchievements);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    async function fetchAchievements() {
+      if (!user) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await achievementService.listAchievements();
+        if (response.data) {
+          setAchievements(response.data);
+        } else {
+          setAchievements([]);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar conquistas:', err);
+        setError('Erro ao carregar conquistas');
+        addNotification({
+          type: 'error',
+          title: 'Erro',
+          message: 'Não foi possível carregar as conquistas'
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAchievements();
+  }, [user, addNotification]);
 
   const getRarityColor = (rarity) => {
     switch (rarity) {

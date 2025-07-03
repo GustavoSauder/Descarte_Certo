@@ -44,94 +44,10 @@ const NotificationsPage = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
 
-  // Dados mockados para demonstração
-  const mockNotifications = [
-    {
-      id: 1,
-      title: 'Nova Conquista Desbloqueada!',
-      message: 'Parabéns! Você desbloqueou a conquista "Primeiro Passo" por completar seu primeiro descarte.',
-      type: 'achievement',
-      read: false,
-      createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutos atrás
-      priority: 'high',
-      icon: FaTrophy
-    },
-    {
-      id: 2,
-      title: 'Pontos Adicionados',
-      message: 'Você ganhou 25 pontos por descartar 5 itens de plástico. Continue assim!',
-      type: 'points',
-      read: false,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 horas atrás
-      priority: 'medium',
-      icon: FaStar
-    },
-    {
-      id: 3,
-      title: 'Novo Desafio Disponível',
-      message: 'Um novo desafio mensal está disponível: "Recicle 50 itens em uma semana".',
-      type: 'challenge',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 dia atrás
-      priority: 'medium',
-      icon: FaRocket
-    },
-    {
-      id: 4,
-      title: 'Recompensa Disponível',
-      message: 'Você tem pontos suficientes para resgatar uma recompensa. Visite a loja!',
-      type: 'reward',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 dias atrás
-      priority: 'low',
-      icon: FaGift
-    },
-    {
-      id: 5,
-      title: 'Ranking Atualizado',
-      message: 'Você subiu 3 posições no ranking desta semana. Parabéns!',
-      type: 'ranking',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 dias atrás
-      priority: 'medium',
-      icon: FaChartLine
-    },
-    {
-      id: 6,
-      title: 'Lembrete Semanal',
-      message: 'Não esqueça de reciclar esta semana! Você está próximo de uma nova conquista.',
-      type: 'reminder',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4), // 4 dias atrás
-      priority: 'low',
-      icon: FaCalendarAlt
-    },
-    {
-      id: 7,
-      title: 'Amigo Conectado',
-      message: 'João Silva aceitou seu convite e se juntou ao Descarte Certo!',
-      type: 'social',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 dias atrás
-      priority: 'low',
-      icon: FaUsers
-    },
-    {
-      id: 8,
-      title: 'Manutenção Programada',
-      message: 'O sistema estará em manutenção amanhã das 2h às 4h da manhã.',
-      type: 'system',
-      read: true,
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6), // 6 dias atrás
-      priority: 'high',
-      icon: FaCog
-    }
-  ];
-
   useEffect(() => {
     // Simular carregamento
     setTimeout(() => {
-      setNotifications(mockNotifications);
+      setNotifications([]);
       setLoading(false);
     }, 1000);
   }, []);
@@ -216,68 +132,65 @@ const NotificationsPage = () => {
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 px-4">
+    <div className="w-full max-w-5xl mx-auto py-4 sm:py-8 px-1 sm:px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-center gap-3">
-            <FaBell className="text-4xl text-blue-500" />
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-4 flex items-center justify-center gap-2 sm:gap-3">
+            <FaBell className="text-2xl sm:text-4xl text-blue-500" />
             Notificações
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Mantenha-se atualizado sobre suas atividades, conquistas e novidades
           </p>
         </div>
 
         {/* Estatísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="text-center p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaBell className="text-xl text-blue-500" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{notifications.length}</span>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+          <Card className="text-center p-2 sm:p-4">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+              <FaBell className="text-lg sm:text-xl text-blue-500" />
+              <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{notifications.length}</span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total</p>
           </Card>
-          
-          <Card className="text-center p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaEye className="text-xl text-green-500" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{unreadCount}</span>
+          <Card className="text-center p-2 sm:p-4">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+              <FaEye className="text-lg sm:text-xl text-green-500" />
+              <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{unreadCount}</span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Não lidas</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Não lidas</p>
           </Card>
-          
-          <Card className="text-center p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaTrophy className="text-xl text-yellow-500" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Card className="text-center p-2 sm:p-4">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+              <FaTrophy className="text-lg sm:text-xl text-yellow-500" />
+              <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {notifications.filter(n => n.type === 'achievement').length}
               </span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Conquistas</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Conquistas</p>
           </Card>
-          
-          <Card className="text-center p-4">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <FaGift className="text-xl text-purple-500" />
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Card className="text-center p-2 sm:p-4">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+              <FaGift className="text-lg sm:text-xl text-purple-500" />
+              <span className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {notifications.filter(n => n.type === 'reward').length}
               </span>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Recompensas</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Recompensas</p>
           </Card>
         </div>
 
         {/* Ações */}
-        <div className="flex flex-wrap gap-2 mb-6 justify-between items-center">
+        <div className="flex flex-wrap gap-2 mb-4 sm:mb-6 justify-between items-center text-xs sm:text-base">
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-colors text-xs sm:text-base ${
                 filter === 'all'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -287,7 +200,7 @@ const NotificationsPage = () => {
             </button>
             <button
               onClick={() => setFilter('unread')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-colors text-xs sm:text-base ${
                 filter === 'unread'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -297,7 +210,7 @@ const NotificationsPage = () => {
             </button>
             <button
               onClick={() => setFilter('read')}
-              className={`px-4 py-2 rounded-lg transition-colors ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-colors text-xs sm:text-base ${
                 filter === 'read'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
@@ -306,13 +219,12 @@ const NotificationsPage = () => {
               Lidas ({notifications.length - unreadCount})
             </button>
           </div>
-          
           <div className="flex gap-2">
             <Button
               onClick={handleMarkAllAsRead}
               variant="secondary"
-              size="sm"
-              className="flex items-center gap-2"
+              size="xs"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-base"
             >
               <FaCheck />
               Marcar todas como lidas
@@ -320,8 +232,8 @@ const NotificationsPage = () => {
             <Button
               onClick={handleDeleteAll}
               variant="danger"
-              size="sm"
-              className="flex items-center gap-2"
+              size="xs"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-base"
             >
               <FaTrash />
               Limpar todas
@@ -330,11 +242,11 @@ const NotificationsPage = () => {
         </div>
 
         {/* Lista de Notificações */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           {filteredNotifications.length === 0 ? (
-            <Card className="text-center py-12">
-              <FaBell className="text-6xl text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 text-lg">
+            <Card className="text-center py-8 sm:py-12">
+              <FaBell className="text-4xl sm:text-6xl text-gray-300 dark:text-gray-600 mx-auto mb-2 sm:mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">
                 {filter === 'unread' 
                   ? 'Você não tem notificações não lidas.'
                   : filter === 'read'
@@ -346,7 +258,6 @@ const NotificationsPage = () => {
           ) : (
             filteredNotifications.map((notification, index) => {
               const Icon = notification.icon;
-              
               return (
                 <motion.div
                   key={notification.id}
@@ -354,66 +265,66 @@ const NotificationsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className={`p-6 transition-all duration-300 hover:shadow-lg ${
+                  <Card className={`p-3 sm:p-6 transition-all duration-300 hover:shadow-lg rounded-xl sm:rounded-2xl flex flex-col gap-2 sm:gap-4 ${
                     notification.read 
                       ? 'bg-gray-50 dark:bg-gray-700 opacity-75' 
                       : 'bg-white dark:bg-gray-800 ring-2 ring-blue-500'
                   }`}>
-                    <div className="flex gap-4">
+                    <div className="flex gap-2 sm:gap-4 items-start">
                       {/* Ícone */}
-                      <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${getTypeBg(notification.type)}`}>
-                        <Icon className={`text-xl ${getTypeColor(notification.type)}`} />
+                      <div className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ${getTypeBg(notification.type)}`}>
+                        <Icon className={`text-lg sm:text-xl ${getTypeColor(notification.type)}`} />
                       </div>
 
                       {/* Conteúdo */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start justify-between gap-2 sm:gap-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                            <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
+                              <h3 className="font-semibold text-base sm:text-lg text-gray-900 dark:text-white">
                                 {notification.title}
                               </h3>
                               {!notification.read && (
                                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                               )}
                             </div>
-                            <p className="text-gray-600 dark:text-gray-400 mb-3">
+                            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-base mb-2 sm:mb-3">
                               {notification.message}
                             </p>
-                            <div className="flex items-center gap-4 text-sm">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm">
                               <span className="text-gray-500 dark:text-gray-400">
                                 {formatTimeAgo(notification.createdAt)}
                               </span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeBg(notification.type)} ${getTypeColor(notification.type)}`}>
+                              <span className={`px-2 py-1 rounded-full font-medium ${getTypeBg(notification.type)} ${getTypeColor(notification.type)}`}
+                                style={{ fontSize: '0.7rem' }}>
                                 {notification.type}
                               </span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(notification.priority)}`}>
+                              <span className={`px-2 py-1 rounded-full font-medium ${getPriorityColor(notification.priority)}`}
+                                style={{ fontSize: '0.7rem' }}>
                                 {notification.priority}
                               </span>
                             </div>
                           </div>
 
                           {/* Ações */}
-                          <div className="flex gap-2">
+                          <div className="flex flex-col gap-2 items-end">
                             {!notification.read && (
                               <Button
                                 onClick={() => handleMarkAsRead(notification.id)}
-                                size="sm"
                                 variant="secondary"
-                                className="flex items-center gap-1"
+                                size="xs"
+                                className="px-2 py-1 text-xs"
                               >
-                                <FaCheck />
-                                Lida
+                                <FaCheck className="mr-1" /> Lida
                               </Button>
                             )}
                             <Button
                               onClick={() => handleDelete(notification.id)}
                               variant="danger"
-                              size="sm"
-                              className="flex items-center gap-1"
+                              size="xs"
+                              className="px-2 py-1 text-xs"
                             >
-                              <FaTrash />
-                              Excluir
+                              <FaTrash className="mr-1" /> Excluir
                             </Button>
                           </div>
                         </div>

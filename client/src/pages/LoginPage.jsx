@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaLeaf, FaGoogle, FaSpinner } from 'react-icons/fa';
-import { useAuth } from '../hooks';
+import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase.js';
 import PasswordInput from '../components/ui/PasswordInput';
 import { useTranslation } from 'react-i18next';

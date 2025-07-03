@@ -202,9 +202,9 @@ export default function KitPage() {
                   <span>Rede de parceiros e colaboração</span>
               </li>
             </ul>
+            </div>
           </div>
         </div>
-      </div>
       </motion.div>
       
       {/* Métricas em Tempo Real */}

@@ -24,10 +24,10 @@ const Button = ({
   };
   
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base',
-    xl: 'px-8 py-4 text-lg',
+    sm: 'px-3 py-2 text-base sm:px-3 sm:py-1.5 sm:text-sm',
+    md: 'px-4 py-2 text-base sm:text-sm',
+    lg: 'px-6 py-3 text-lg sm:text-base',
+    xl: 'px-8 py-4 text-xl sm:text-lg',
   };
   
   const classes = [

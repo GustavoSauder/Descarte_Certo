@@ -4,8 +4,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AnimatePresence } from 'framer-motion';
-import { AuthProvider } from './hooks';
-import { AppStateProvider } from './hooks';
+import { AuthProvider, AppStateProvider } from './hooks';
 import Layout from './components/Layout';
 import SEO from './components/SEO';
 import { Loading } from './components/ui/Loading';
@@ -18,6 +17,7 @@ import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
 import SupportPage from './pages/SupportPage';
 import SettingsPage from './pages/SettingsPage';
+import ColetaAgendadaPage from './pages/ColetaAgendadaPage';
 
 // Lazy loading de todas as páginas
 const Home = React.lazy(() => import('./pages/Home'));
@@ -189,6 +189,8 @@ function App() {
                           </Suspense>
                         } 
                       />
+                      
+                      <Route path="/coleta-agendada" element={<ColetaAgendadaPage />} />
                       
                       {/* Rota admin - agora pública também */}
                       <Route 
