@@ -13,6 +13,7 @@ const { securityConfig } = require('./middleware/security');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Middleware de segurança
 app.use(helmet({
