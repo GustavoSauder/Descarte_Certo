@@ -39,7 +39,7 @@ export default function FeedbackPage() {
         timestamp: new Date().toISOString()
       };
 
-      const response = await fetch('http://localhost:3002/api/feedback', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -238,47 +238,14 @@ class MetricsService {
   // Buscar estatísticas detalhadas
   async getDetailedStats() {
     try {
-      const { data: disposals, error: disposalsError } = await supabase
-        .from('disposals')
-        .select('*');
-
-      const { data: users, error: usersError } = await supabase
-        .from('users')
-        .select('*');
-
-      const { data: feedback, error: feedbackError } = await supabase
-        .from('feedback')
-        .select('*');
-
-      if (disposalsError || usersError || feedbackError) {
-        throw new Error('Erro ao buscar dados detalhados');
-      }
-
-      // Calcular estatísticas
-      const totalDisposals = disposals.length;
-      const totalUsers = users.length;
-      const totalFeedback = feedback.length;
-      const totalWeight = disposals.reduce((sum, d) => sum + (d.weight || 0), 0);
-      
-      // Média de pontos por usuário
-      const totalPoints = disposals.reduce((sum, d) => sum + (d.points || 0), 0);
-      const avgPointsPerUser = users.length > 0 ? Math.round(totalPoints / users.length) : 0;
-
-      // Distribuição de materiais
-      const materialDistribution = disposals.reduce((acc, disposal) => {
-        const material = disposal.material_type || 'outro';
-        acc[material] = (acc[material] || 0) + 1;
-        return acc;
-      }, {});
-
-      return {
-        totalDisposals,
-        totalUsers,
-        totalFeedback,
-        totalWeight: Math.round(totalWeight * 100) / 100,
-        avgPointsPerUser,
-        materialDistribution
-      };
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      return data.data || {};
     } catch (error) {
       console.error('Erro ao buscar estatísticas detalhadas:', error);
       return {

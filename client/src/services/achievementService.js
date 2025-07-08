@@ -1,5 +1,5 @@
 // Serviço de Conquistas
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const listAchievements = async () => {
   // Chamada real à API

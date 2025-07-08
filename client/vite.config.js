@@ -52,11 +52,7 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    proxy: {
-      '/api': 'http://localhost:3002',
-      '/uploads': 'http://localhost:3002',
-      '/docs': 'http://localhost:3002',
-    },
+    // Remover proxies para localhost:3002
   },
   build: {
     target: 'es2015',
