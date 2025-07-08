@@ -70,21 +70,21 @@ const Dashboard = () => {
 
   const activityData = [
     {
-      date: '2024-01-15',
+              date: '2025-01-15',
       type: 'Plástico',
       amount: '2.5 kg',
       points: 25,
       location: 'São Paulo, SP',
     },
     {
-      date: '2024-01-14',
+              date: '2025-01-14',
       type: 'Papel',
       amount: '1.8 kg',
       points: 18,
       location: 'São Paulo, SP',
     },
     {
-      date: '2024-01-13',
+              date: '2025-01-13',
       type: 'Vidro',
       amount: '3.2 kg',
       points: 32,

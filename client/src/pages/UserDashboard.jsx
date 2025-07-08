@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   FaQrcode, 
   FaCoins, 
@@ -15,7 +15,9 @@ import {
   FaWater,
   FaFire,
   FaUsers,
-  FaInfoCircle
+  FaInfoCircle,
+  FaCheckCircle,
+  FaCalendarAlt
 } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { useAppState } from '../hooks';
@@ -25,6 +27,8 @@ import Table from '../components/ui/Table';
 import Modal from '../components/ui/Modal';
 import Button from '../components/ui/Button';
 import { useUserMetrics } from '../hooks/useUserMetrics';
+import { useRewards } from '../hooks/useRewards';
+import { achievementService } from '../services/achievementService';
 import { supabase } from '../lib/supabase';
 
 function usePointsHistory(userId) {
@@ -33,7 +37,19 @@ function usePointsHistory(userId) {
     if (!userId) return;
     fetch(`http://localhost:4000/api/user/${userId}/points-history`)
       .then(res => res.json())
-      .then(setPointsHistory);
+      .then(data => {
+        // Verificar se os dados são válidos
+        if (Array.isArray(data)) {
+          setPointsHistory(data);
+        } else {
+          console.warn('Dados de histórico de pontos inválidos:', data);
+          setPointsHistory([]);
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao buscar histórico de pontos:', error);
+        setPointsHistory([]);
+      });
   }, [userId]);
   return pointsHistory;
 }
@@ -45,12 +61,16 @@ const UserDashboard = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [history, setHistory] = useState([]);
+  const [achievements, setAchievements] = useState([]);
+  const [achievementsLoading, setAchievementsLoading] = useState(true);
   
   const { user, isAuthenticated } = useAuth();
   const { addNotification } = useAppState();
+  const navigate = useNavigate();
   // Buscar métricas em tempo real do Supabase
   const metrics = useUserMetrics(user);
   const pointsHistory = usePointsHistory(user?.id);
+  const { redeemedHistory } = useRewards();
 
   useEffect(() => {
     if (!user) return;
@@ -71,12 +91,22 @@ const UserDashboard = () => {
     return () => supabase.removeChannel(channel);
   }, [user]);
 
-  const achievements = [
-    { id: 1, title: 'Primeiro Descarte', description: 'Realizou o primeiro descarte', iconName: 'FaLeaf', unlocked: true, progress: 100 },
-    { id: 2, title: 'Reciclador Bronze', description: 'Descarte 10 itens', iconName: 'FaTrophy', unlocked: true, progress: 100 },
-    { id: 3, title: 'Reciclador Prata', description: 'Descarte 50 itens', iconName: 'FaTrophy', unlocked: false, progress: 60 },
-    { id: 4, title: 'Reciclador Ouro', description: 'Descarte 100 itens', iconName: 'FaTrophy', unlocked: false, progress: 30 }
-  ];
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await achievementService.listAchievements();
+        if (response.success && response.data) {
+          setAchievements(response.data);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar conquistas:', error);
+      } finally {
+        setAchievementsLoading(false);
+      }
+    };
+
+    fetchAchievements();
+  }, []);
 
   const rewards = [
     { id: 1, title: 'Cupom 10% Off', partner: 'EcoStore', points: 500, claimed: false },
@@ -94,7 +124,7 @@ const UserDashboard = () => {
       });
       return;
     }
-    setShowQRModal(true);
+    navigate('/collect-points');
   };
 
   const handleScanQR = () => {
@@ -121,6 +151,11 @@ const UserDashboard = () => {
         message: `Código ${code} registrado com sucesso.`
       });
     }
+  };
+
+  const handleNotifications = () => {
+    // Redirecionar para a página de notificações
+    window.location.href = '/notificacoes';
   };
 
   const tabs = [
@@ -273,28 +308,35 @@ const UserDashboard = () => {
     <div className="space-y-6">
       <Card>
         <h3 className="text-lg font-semibold mb-4">Histórico de Pontos</h3>
-        <Charts
-          type="line"
-          data={{
-            labels: pointsHistory.map(item =>
-              new Date(item.month).toLocaleString('pt-BR', { month: 'short', year: '2-digit' })
-            ),
-            datasets: [{
-              label: 'Pontos Acumulados',
-              data: pointsHistory.map(item => Number(item.total_points)),
-              borderColor: 'rgb(34, 197, 94)',
-              backgroundColor: 'rgba(34, 197, 94, 0.1)',
-              tension: 0.4
-            }]
-          }}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: { position: 'top' },
-              title: { display: true, text: 'Evolução dos Pontos' }
-            }
-          }}
-        />
+        {pointsHistory && pointsHistory.length > 0 ? (
+          <Charts
+            type="line"
+            data={{
+              labels: pointsHistory.map(item =>
+                new Date(item.month).toLocaleString('pt-BR', { month: 'short', year: '2-digit' })
+              ),
+              datasets: [{
+                label: 'Pontos Acumulados',
+                data: pointsHistory.map(item => Number(item.total_points)),
+                borderColor: 'rgb(34, 197, 94)',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                tension: 0.4
+              }]
+            }}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: 'Evolução dos Pontos' }
+              }
+            }}
+          />
+        ) : (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <p>Nenhum histórico de pontos disponível</p>
+            <p className="text-sm mt-2">Faça seu primeiro descarte para ver o gráfico de evolução!</p>
+          </div>
+        )}
       </Card>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -336,109 +378,157 @@ const UserDashboard = () => {
 
   const renderAchievements = () => (
     <div className="space-y-6">
-      <Card>
-        <h3 className="text-lg font-semibold mb-4">Conquistas Desbloqueadas</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {achievements.map((achievement) => (
-            <div
-              key={achievement.id}
-              className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                achievement.unlocked
-                  ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
-                  : 'border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
-              }`}
-            >
-              <div className="text-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
-                  achievement.unlocked
-                    ? 'bg-green-100 dark:bg-green-900'
-                    : 'bg-gray-100 dark:bg-gray-700'
-                }`}>
-                  {achievement.iconName === 'FaLeaf' && (
-                    <FaLeaf className={`w-6 h-6 ${
+      {achievementsLoading ? (
+        <Card>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Carregando conquistas...</p>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <h3 className="text-lg font-semibold mb-4">Minhas Conquistas</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {achievements.map((achievement) => {
+              const IconComponent = getIconComponent(achievement.icon);
+              return (
+                <div
+                  key={achievement.id}
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                    achievement.unlocked
+                      ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
+                      : 'border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 ${
                       achievement.unlocked
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-gray-400 dark:text-gray-500'
-                    }`} />
-                  )}
-                  {achievement.iconName === 'FaTrophy' && (
-                    <FaTrophy className={`w-6 h-6 ${
-                      achievement.unlocked
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-gray-400 dark:text-gray-500'
-                    }`} />
-                  )}
-                </div>
-                <h4 className={`font-semibold mb-1 ${
-                  achievement.unlocked
-                    ? 'text-green-800 dark:text-green-200'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}>
-                  {achievement.title}
-                </h4>
-                <p className={`text-xs ${
-                  achievement.unlocked
-                    ? 'text-green-600 dark:text-green-300'
-                    : 'text-gray-400 dark:text-gray-500'
-                }`}>
-                  {achievement.description}
-                </p>
-                {!achievement.unlocked && (
-                  <div className="mt-2">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
-                      <div 
-                        className="bg-green-600 h-1 rounded-full transition-all duration-300"
-                        style={{ width: `${achievement.progress}%` }}
-                      />
+                        ? 'bg-green-100 dark:bg-green-900'
+                        : 'bg-gray-100 dark:bg-gray-700'
+                    }`}>
+                      <IconComponent className={`w-6 h-6 ${
+                        achievement.unlocked
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-400 dark:text-gray-500'
+                      }`} />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{achievement.progress}%</p>
+                    <h4 className={`font-semibold mb-1 ${
+                      achievement.unlocked
+                        ? 'text-green-800 dark:text-green-200'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {achievement.title}
+                    </h4>
+                    <p className={`text-xs ${
+                      achievement.unlocked
+                        ? 'text-green-600 dark:text-green-300'
+                        : 'text-gray-400 dark:text-gray-500'
+                    }`}>
+                      {achievement.description}
+                    </p>
+                    <div className="mt-2">
+                      <div className="flex items-center justify-center mb-2">
+                        <FaCoins className="w-4 h-4 text-yellow-500 mr-1" />
+                        <span className="text-sm font-semibold">{achievement.points} pontos</span>
+                      </div>
+                      {!achievement.unlocked && (
+                        <div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1">
+                            <div 
+                              className="bg-green-600 h-1 rounded-full transition-all duration-300"
+                              style={{ width: `${achievement.progress}%` }}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{achievement.progress}%</p>
+                        </div>
+                      )}
+                      {achievement.unlocked && achievement.dateUnlocked && (
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          Desbloqueado em {new Date(achievement.dateUnlocked).toLocaleDateString('pt-BR')}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
     </div>
   );
+
+  // Função auxiliar para obter o componente de ícone
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      'FaLeaf': FaLeaf,
+      'FaTrophy': FaTrophy,
+      'FaMedal': FaTrophy,
+      'FaCrown': FaTrophy,
+      'FaGem': FaTrophy,
+      'FaCalendarAlt': FaCalendarAlt,
+      'FaBook': FaLeaf,
+      'FaUsers': FaUsers,
+      'FaRecycle': FaRecycle,
+      'FaAward': FaTrophy,
+      'FaRocket': FaTrophy,
+      'FaFire': FaFire
+    };
+    return iconMap[iconName] || FaTrophy;
+  };
 
   const renderRewards = () => (
     <div className="space-y-6">
       <Card>
-        <h3 className="text-lg font-semibold mb-4">Recompensas Disponíveis</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {rewards.map((reward) => (
-            <div
-              key={reward.id}
-              className={`p-6 rounded-lg border-2 transition-all duration-200 ${
-                reward.claimed
-                  ? 'border-green-200 bg-green-50 dark:bg-green-900/20'
-                  : 'border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700'
-              }`}
-            >
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FaGift className="w-8 h-8 text-green-600 dark:text-green-400" />
+        <h3 className="text-lg font-semibold mb-4">Recompensas Resgatadas</h3>
+        {redeemedHistory && redeemedHistory.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {redeemedHistory.map((item) => (
+              <div
+                key={item.id}
+                className="p-6 rounded-lg border-2 border-green-200 bg-green-50 dark:bg-green-900/20 transition-all duration-200"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                    <FaGift className="w-8 h-8 text-green-600 dark:text-green-400" />
+                    <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1">
+                      <FaCheckCircle className="w-3 h-3" />
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2 text-green-800 dark:text-green-200">{item.title}</h3>
+                  <p className="text-sm text-green-600 dark:text-green-300 mb-3">
+                    Parceiro: {item.partner}
+                  </p>
+                  <div className="flex items-center justify-center mb-4">
+                    <FaCoins className="w-5 h-5 text-yellow-500 mr-2" />
+                    <span className="font-bold text-lg">{item.points} pontos</span>
+                  </div>
+                  <div className="text-xs text-green-600 dark:text-green-400">
+                    <FaCalendarAlt className="inline mr-1" />
+                    Resgatado em {new Date(item.redeemedAt).toLocaleDateString('pt-BR')}
+                  </div>
                 </div>
-                <h3 className="font-semibold text-lg mb-2">{reward.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Parceiro: {reward.partner}
-                </p>
-                <div className="flex items-center justify-center mb-4">
-                  <FaCoins className="w-5 h-5 text-yellow-500 mr-2" />
-                  <span className="font-bold text-lg">{reward.points} pontos</span>
-                </div>
-                <Button
-                  variant={reward.claimed ? 'outline' : 'primary'}
-                  disabled={reward.claimed}
-                  className="w-full"
-                >
-                  {reward.claimed ? 'Resgatado' : 'Resgatar'}
-                </Button>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <FaGift className="text-gray-400 text-4xl mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">Nenhuma recompensa resgatada</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-500">Resgate sua primeira recompensa para ver o histórico aqui!</p>
+            <div className="mt-4">
+              <Link to="/recompensas">
+                <Button 
+                  variant="primary"
+                  className="inline-flex items-center gap-2"
+                >
+                  <FaGift className="w-4 h-4" />
+                  Ver Recompensas Disponíveis
+                </Button>
+              </Link>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </Card>
     </div>
   );
@@ -546,20 +636,6 @@ const UserDashboard = () => {
                     : 'Visualizando dados de exemplo - Faça login para personalizar!'
                   }
                 </p>
-              </div>
-              <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
-                <Button onClick={handleCollectPoints} variant="primary" size="sm" className="w-full sm:w-auto text-xs sm:text-base px-2 sm:px-4 py-2">
-                  <FaQrcode className="mr-2" />
-                  Coletar Pontos
-                </Button>
-                <button className="relative p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                  <FaBell size={18} />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
               </div>
             </div>
           </div>

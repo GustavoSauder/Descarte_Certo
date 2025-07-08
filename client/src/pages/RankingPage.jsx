@@ -7,6 +7,7 @@ import Card from '../components/ui/Card';
 import { useScrollAnimation, useStaggerAnimation } from '../hooks';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { useMetrics } from '../hooks/useMetrics';
 
 const RankingPage = () => {
   const { isAuthenticated } = useAuth();
@@ -14,6 +15,7 @@ const RankingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('recycling');
+  const { onlineUsers, schoolsCount, citiesCount, totalWeight, loading: metricsLoading } = useMetrics();
 
   useEffect(() => {
     async function fetchRanking() {

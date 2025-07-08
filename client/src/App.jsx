@@ -9,32 +9,35 @@ import Layout from './components/Layout';
 import SEO from './components/SEO';
 import { Loading } from './components/ui/Loading';
 import ErrorBoundary from './components/ErrorBoundary';
-import RewardsPage from './pages/RewardsPage';
-import AchievementsPage from './pages/AchievementsPage';
-import RankingPage from './pages/RankingPage';
-import HistoryPage from './pages/HistoryPage';
-import ProfilePage from './pages/ProfilePage';
-import NotificationsPage from './pages/NotificationsPage';
-import SupportPage from './pages/SupportPage';
-import SettingsPage from './pages/SettingsPage';
-import ColetaAgendadaPage from './pages/ColetaAgendadaPage';
+import GoogleAuthDebug from './components/GoogleAuthDebug';
+import RewardsPage from './pages/RewardsPage.jsx';
+import AchievementsPage from './pages/AchievementsPage.jsx';
+import RankingPage from './pages/RankingPage.jsx';
+import HistoryPage from './pages/HistoryPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import NotificationsPage from './pages/NotificationsPage.jsx';
+import SupportPage from './pages/SupportPage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
+import ColetaAgendadaPage from './pages/ColetaAgendadaPage.jsx';
+import FeedbackPage from './pages/FeedbackPage.jsx';
+import EducacaoAmbientalPage from './pages/EducacaoAmbientalPage.jsx';
 
 // Lazy loading de todas as páginas
-const Home = React.lazy(() => import('./pages/Home'));
-const AppPage = React.lazy(() => import('./pages/AppPage'));
-const KitPage = React.lazy(() => import('./pages/KitPage'));
-const ImpactPage = React.lazy(() => import('./pages/ImpactPage'));
-const SobreNos = React.lazy(() => import('./pages/SobreNos'));
-const SobreProjeto = React.lazy(() => import('./pages/SobreProjeto'));
-const ContactPage = React.lazy(() => import('./pages/ContactPage'));
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-const UserDashboard = React.lazy(() => import('./pages/UserDashboard'));
-const Admin = React.lazy(() => import('./pages/Admin'));
+const Home = React.lazy(() => import('./pages/Home.jsx'));
+const AppPage = React.lazy(() => import('./pages/AppPage.jsx'));
+const KitPage = React.lazy(() => import('./pages/KitPage.jsx'));
+const ImpactPage = React.lazy(() => import('./pages/ImpactPage.jsx'));
+const SobreNos = React.lazy(() => import('./pages/SobreNos.jsx'));
+const SobreProjeto = React.lazy(() => import('./pages/SobreProjeto.jsx'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage.jsx'));
+const Dashboard = React.lazy(() => import('./pages/Dashboard.jsx'));
+const UserDashboard = React.lazy(() => import('./pages/UserDashboard.jsx'));
+const Admin = React.lazy(() => import('./pages/Admin.jsx'));
 
 // Novas páginas
-const LoginPage = React.lazy(() => import('./pages/LoginPage'));
-const RegisterPage = React.lazy(() => import('./pages/RegisterPage'));
-const CollectPointsPage = React.lazy(() => import('./pages/CollectPointsPage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage.jsx'));
+const RegisterPage = React.lazy(() => import('./pages/RegisterPage.jsx'));
+const CollectPointsPage = React.lazy(() => import('./pages/CollectPointsPage.jsx'));
 
 // Initialize i18n
 import './i18n.js';
@@ -191,6 +194,8 @@ function App() {
                       />
                       
                       <Route path="/coleta-agendada" element={<ColetaAgendadaPage />} />
+                      <Route path="/feedback" element={<FeedbackPage />} />
+                      <Route path="/educacao-ambiental" element={<EducacaoAmbientalPage />} />
                       
                       {/* Rota admin - agora pública também */}
                       <Route 
@@ -220,6 +225,9 @@ function App() {
           
           {/* React Query DevTools - only in development */}
           {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+          
+          {/* Google Auth Debug - only in development */}
+          {import.meta.env.DEV && <GoogleAuthDebug />}
         </QueryClientProvider>
       </HelmetProvider>
     </ErrorBoundary>

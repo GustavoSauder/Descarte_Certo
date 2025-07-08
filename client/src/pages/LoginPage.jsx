@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaLeaf, FaGoogle, FaSpinner } from 'react-icons/fa';
+import { FaLeaf, FaSpinner } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase.js';
 import PasswordInput from '../components/ui/PasswordInput';
@@ -85,26 +85,6 @@ const LoginPage = () => {
       }
     } catch (error) {
       setErrors({ general: error?.message || 'Erro ao fazer login.' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-      
-      if (error) {
-        setErrors({ general: error.message });
-      }
-    } catch (error) {
-      setErrors({ general: 'Erro ao fazer login com Google' });
     } finally {
       setIsLoading(false);
     }
@@ -246,29 +226,6 @@ const LoginPage = () => {
               ) : (
                 'Entrar'
               )}
-            </motion.button>
-
-            {/* Divisor */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
-                  Ou continue com
-                </span>
-              </div>
-            </div>
-
-            {/* Botão Google */}
-            <motion.button
-              type="button"
-              onClick={handleGoogleLogin}
-              disabled={isLoading}
-              className="w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center"
-            >
-              <FaGoogle className="mr-2 text-red-500" />
-              Google
             </motion.button>
           </motion.form>
 

@@ -26,6 +26,42 @@ ChartJS.register(
   ArcElement
 );
 
+// Generic Charts component
+const Charts = ({ type = 'line', data, options = {}, ...props }) => {
+  const defaultOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: options.title || 'Chart',
+      },
+    },
+    ...options,
+  };
+
+  const renderChart = () => {
+    switch (type) {
+      case 'line':
+        return <Line data={data} options={defaultOptions} {...props} />;
+      case 'bar':
+        return <Bar data={data} options={defaultOptions} {...props} />;
+      case 'doughnut':
+        return <Doughnut data={data} options={defaultOptions} {...props} />;
+      default:
+        return <Line data={data} options={defaultOptions} {...props} />;
+    }
+  };
+
+  return (
+    <div className="w-full h-full">
+      {renderChart()}
+    </div>
+  );
+};
+
 // Gráfico de barras
 export const BarChart = ({
   data = [],
@@ -308,4 +344,6 @@ export const SchoolRankingChart = ({ data }) => {
   return <BarChart data={chartData} title="Ranking de Escolas" />;
 };
 
-export default { BarChart, PieChart, LineChart, StatCard }; 
+export default Charts;
+
+// End of file 

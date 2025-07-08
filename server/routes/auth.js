@@ -169,13 +169,22 @@ router.post('/register', [
     );
     // Enviar e-mail de confirmação
     const confirmUrl = `${process.env.FRONTEND_URL}/confirmar-email?token=${emailConfirmationToken}`;
-    await NotificationService.sendEmail(
-      email,
-      'Confirme seu e-mail - Descarte Certo',
-      `<h2>Bem-vindo ao Descarte Certo!</h2><p>Olá, ${name}!</p><p>Para ativar sua conta, confirme seu e-mail clicando no link abaixo:</p><a href="${confirmUrl}">Confirmar e-mail</a><p>Se não foi você, ignore este e-mail.</p>`,
-      `Bem-vindo ao Descarte Certo! Para ativar sua conta, acesse: ${confirmUrl}`,
-      null // Não salvar no banco para emails de confirmação
-    );
+    try {
+      await NotificationService.sendEmail(
+        email,
+        'Confirme seu e-mail - Descarte Certo',
+        `<h2>Bem-vindo ao Descarte Certo!</h2><p>Olá, ${name}!</p><p>Para ativar sua conta, confirme seu e-mail clicando no link abaixo:</p><a href="${confirmUrl}">Confirmar e-mail</a><p>Se não foi você, ignore este e-mail.</p>`,
+        `Bem-vindo ao Descarte Certo! Para ativar sua conta, acesse: ${confirmUrl}`,
+        null // Não salvar no banco para emails de confirmação
+      );
+      // Enviar e-mail de boas-vindas
+      await NotificationService.sendWelcome(user.id, name, email);
+    } catch (err) {
+      // Se falhar, remove o usuário recém-criado
+      await prisma.user.delete({ where: { id: user.id } });
+      console.error('Erro ao enviar e-mail, usuário removido:', err);
+      return res.status(500).json({ error: 'Erro ao enviar e-mail de confirmação. Tente novamente.' });
+    }
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail para confirmar a conta.' });
   } catch (error) {
     console.error('Erro no cadastro:', error);

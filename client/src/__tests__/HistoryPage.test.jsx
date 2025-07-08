@@ -8,7 +8,7 @@ vi.mock('../services/disposalService');
 describe('HistoryPage', () => {
   it('deve renderizar histórico de descartes', async () => {
     disposalService.listDisposals.mockResolvedValue({ data: [
-      { id: '1', createdAt: '2024-06-22', materialType: 'Plástico', weight: 2, points: 10 },
+      { id: '1', createdAt: '2025-06-22', materialType: 'Plástico', weight: 2, points: 10 },
     ] });
     render(<HistoryPage />);
     expect(screen.getByText(/carregando histórico/i)).toBeInTheDocument();

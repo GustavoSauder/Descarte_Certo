@@ -27,59 +27,34 @@ const prisma = new PrismaClient();
  */
 router.get('/stats', authenticateToken, requireRole(['ADMIN']), async (req, res) => {
   try {
+    const now = new Date();
+    const twoMinutesAgo = new Date(now.getTime() - 2 * 60 * 1000);
     const [
       totalUsers,
       totalDisposals,
       totalPoints,
-      activeUsers,
-      disposalStats,
-      userStats
+      onlineUsers,
+      schools,
+      cities,
+      totalWeight
     ] = await Promise.all([
       prisma.user.count(),
       prisma.disposal.count(),
-      prisma.user.aggregate({
-        _sum: { points: true }
-      }),
-      prisma.user.count({
-        where: {
-          updatedAt: {
-            gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Últimos 30 dias
-          }
-        }
-      }),
-      prisma.disposal.groupBy({
-        by: ['materialType'],
-        _sum: { weight: true },
-        _count: { id: true }
-      }),
-      prisma.user.groupBy({
-        by: ['school'],
-        _sum: { points: true },
-        _count: { id: true }
-      })
+      prisma.user.aggregate({ _sum: { points: true } }),
+      prisma.user.count({ where: { lastOnline: { gte: twoMinutesAgo } } }),
+      prisma.user.findMany({ distinct: ['school'], where: { school: { not: null } }, select: { school: true } }),
+      prisma.user.findMany({ distinct: ['city'], where: { city: { not: null } }, select: { city: true } }),
+      prisma.disposal.aggregate({ _sum: { weight: true } })
     ]);
 
     res.success({
       totalUsers,
       totalDisposals,
       totalPoints: totalPoints._sum.points || 0,
-      activeUsers,
-      disposalByMaterial: disposalStats.reduce((acc, stat) => {
-        acc[stat.materialType.toLowerCase()] = {
-          weight: stat._sum.weight || 0,
-          count: stat._count.id || 0
-        };
-        return acc;
-      }, {}),
-      schoolRanking: userStats
-        .filter(stat => stat.school)
-        .sort((a, b) => (b._sum.points || 0) - (a._sum.points || 0))
-        .slice(0, 10)
-        .map(stat => ({
-          school: stat.school,
-          points: stat._sum.points || 0,
-          users: stat._count.id || 0
-        }))
+      onlineUsers,
+      schoolsCount: schools.length,
+      citiesCount: cities.length,
+      totalWeight: totalWeight._sum.weight || 0
     });
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);

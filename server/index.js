@@ -91,6 +91,7 @@ app.use('/api/blog', require('./routes/blog'));
 app.use('/api/support', require('./routes/support'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/public', require('./routes/api'));
+app.use('/api/feedback', require('./routes/feedback'));
 
 // Rotas de propriedade (apenas proprietário)
 app.use('/api/ownership', require('./routes/ownership'));

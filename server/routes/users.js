@@ -224,4 +224,18 @@ router.get('/ranking/schools', async (req, res) => {
   }
 });
 
+// Endpoint para retornar conquistas do usuário autenticado no formato esperado pelo frontend
+router.get('/me/achievements', authenticateToken, async (req, res) => {
+  try {
+    const achievements = await prisma.achievement.findMany({
+      where: { userId: req.user.userId },
+      orderBy: { unlockedAt: 'desc' }
+    });
+    res.json({ data: achievements });
+  } catch (error) {
+    console.error('Erro ao buscar conquistas:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 module.exports = router; 

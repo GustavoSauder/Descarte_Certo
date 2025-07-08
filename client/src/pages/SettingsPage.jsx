@@ -179,15 +179,15 @@ export default function SettingsPage() {
         user: {
           name: 'Usuário Exemplo',
           email: 'usuario@exemplo.com',
-          joinDate: '2024-01-01'
+          joinDate: '2025-01-01'
         },
         achievements: [
-          { id: 1, name: 'Primeiro Descarte', date: '2024-01-15' },
-          { id: 2, name: 'Reciclador Bronze', date: '2024-02-01' }
+                      { id: 1, name: 'Primeiro Descarte', date: '2025-01-15' },
+            { id: 2, name: 'Reciclador Bronze', date: '2025-02-01' }
         ],
         disposals: [
-          { id: 1, type: 'plástico', amount: 2.5, date: '2024-01-15' },
-          { id: 2, type: 'papel', amount: 1.8, date: '2024-02-01' }
+                      { id: 1, type: 'plástico', amount: 2.5, date: '2025-01-15' },
+            { id: 2, type: 'papel', amount: 1.8, date: '2025-02-01' }
         ],
         settings: settings
       };

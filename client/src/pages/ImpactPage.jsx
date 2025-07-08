@@ -3,11 +3,15 @@ import { FaChartBar, FaUsers, FaLeaf, FaRecycle, FaSchool, FaCity, FaTrophy, FaM
 import { motion } from 'framer-motion';
 import Card from '../components/ui/Card';
 import { Loading } from '../components/ui/Loading';
+import EnvironmentalImpact from '../components/EnvironmentalImpact';
+import { useMetrics } from '../hooks/useMetrics';
 
 export default function ImpactPage() {
   const [impactData, setImpactData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePeriod, setActivePeriod] = useState('week');
+
+  const { onlineUsers, schoolsCount, citiesCount, totalWeight, loading: metricsLoading } = useMetrics();
 
   useEffect(() => {
     loadImpactData();
@@ -64,63 +68,26 @@ export default function ImpactPage() {
         <Card className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800">
           <FaUsers className="text-3xl text-blue-600 dark:text-blue-400 mx-auto mb-3" />
           <span className="text-2xl md:text-3xl font-bold text-blue-800 dark:text-blue-200">
-            {impactData.general.activeUsers.toLocaleString('pt-BR')}
+            {onlineUsers}
           </span>
           <span className="text-sm text-blue-700 dark:text-blue-300 block">Usuários Ativos</span>
         </Card>
         <Card className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800">
           <FaLeaf className="text-3xl text-purple-600 dark:text-purple-400 mx-auto mb-3" />
           <span className="text-2xl md:text-3xl font-bold text-purple-800 dark:text-purple-200">
-            {impactData.general.recycledWaste.toLocaleString('pt-BR')} kg
+            {totalWeight} kg
           </span>
           <span className="text-sm text-purple-700 dark:text-purple-300 block">Plástico Reciclado</span>
         </Card>
       </motion.div>
 
-      {/* Métricas em Tempo Real */}
+      {/* Impacto Ambiental em Tempo Real */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900 dark:to-teal-800 rounded-xl p-8 shadow-lg border border-teal-200 dark:border-teal-700"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-teal-800 dark:text-teal-200 flex items-center gap-2">
-            <FaClock className="text-xl" />
-            Atividade em Tempo Real
-          </h2>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-teal-700 dark:text-teal-300">Ao vivo</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-teal-800 dark:text-teal-200 mb-2">
-              {impactData.realTime.currentUsers}
-            </div>
-            <div className="text-sm text-teal-700 dark:text-teal-300">Usuários Online</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-teal-800 dark:text-teal-200 mb-2">
-              {impactData.realTime.todayRecycled} kg
-            </div>
-            <div className="text-sm text-teal-700 dark:text-teal-300">Reciclado Hoje</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-teal-800 dark:text-teal-200 mb-2">
-              {impactData.realTime.thisWeekRecycled} kg
-            </div>
-            <div className="text-sm text-teal-700 dark:text-teal-300">Esta Semana</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-teal-800 dark:text-teal-200 mb-2">
-              {impactData.realTime.thisMonthRecycled} kg
-            </div>
-            <div className="text-sm text-teal-700 dark:text-teal-300">Este Mês</div>
-          </div>
-        </div>
+        <EnvironmentalImpact />
       </motion.div>
 
       {/* Rankings por Categoria */}

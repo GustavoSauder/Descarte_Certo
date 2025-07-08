@@ -187,11 +187,16 @@ class NotificationService {
   }
 
   // Notificação de boas-vindas
-  static async sendWelcome(userId) {
+  static async sendWelcome(userId, name, email) {
     const title = 'Bem-vindo ao Descarte Certo! 🌍';
-    const message = 'Obrigado por se juntar à nossa comunidade de reciclagem! Vamos juntos fazer a diferença!';
-    
-    await this.sendUserNotification(userId, 'EMAIL', title, message);
+    const message = `Olá, ${name}!<br><br>Seja bem-vindo(a) à plataforma Descarte Certo.<br><br>Seu cadastro foi realizado com sucesso. Aqui estão seus dados principais:<br>- Nome: <b>${name}</b><br>- E-mail: <b>${email}</b><br><br>Você pode acessar a plataforma a qualquer momento usando seu e-mail e o Magic Link (login sem senha).<br><br>Se precisar de ajuda, entre em contato com nosso suporte: <a href='mailto:gustavo.sauder.santos@escola.pr.gov.br'>gustavo.sauder.santos@escola.pr.gov.br</a><br><br>Bons descartes e boa jornada sustentável!<br>Equipe Descarte Certo`;
+    await this.sendEmail(
+      email,
+      title,
+      this.generateEmailHTML(title, message),
+      `Olá, ${name}!\n\nSeja bem-vindo(a) à plataforma Descarte Certo.\n\nSeu cadastro foi realizado com sucesso.\nNome: ${name}\nE-mail: ${email}\n\nVocê pode acessar a plataforma a qualquer momento usando seu e-mail e o Magic Link (login sem senha).\n\nSe precisar de ajuda, entre em contato com nosso suporte: gustavo.sauder.santos@escola.pr.gov.br\n\nBons descartes e boa jornada sustentável!\nEquipe Descarte Certo`,
+      userId
+    );
   }
 
   // Notificação de aniversário
@@ -244,7 +249,7 @@ class NotificationService {
             <p>Continue fazendo a diferença no meio ambiente!</p>
           </div>
           <div class="footer">
-            <p>© 2024 Descarte Certo. Todos os direitos reservados.</p>
+            <p>© 2025 Descarte Certo. Todos os direitos reservados.</p>
             <p>Se você não quiser receber mais emails, <a href="#">clique aqui</a>.</p>
           </div>
         </div>

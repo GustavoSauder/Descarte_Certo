@@ -1,36 +1,8 @@
 {
-  "version": 2,
-  "name": "descarte-certo",
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist",
-        "installCommand": "cd client && chmod +x build.sh && ./build.sh"
-      }
-    },
-    {
-      "src": "server/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/server/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/$1"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "server/index.js": {
-      "maxDuration": 30
-    }
-  }
-} 
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/docs/(.*)", "destination": "/docs/$1" },
+    { "source": "/apps/(.*)", "destination": "/apps/$1" },
+    { "source": "/qr/(.*)", "destination": "/qr/$1" }
+  ]
+}

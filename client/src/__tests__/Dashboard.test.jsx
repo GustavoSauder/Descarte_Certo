@@ -215,7 +215,7 @@ describe('Dashboard Component', () => {
     const tableData = JSON.parse(screen.getByTestId('table-data').textContent);
     expect(tableData).toHaveLength(3);
     expect(tableData[0]).toEqual({
-      date: '2024-01-15',
+              date: '2025-01-15',
       type: 'Plástico',
       amount: '2.5 kg',
       points: 25,

@@ -15,16 +15,18 @@ async function validateEmail(email) {
     // Verificar se o domínio tem registros MX (servidores de email)
     try {
       const mxRecords = await dns.resolveMx(domain);
-      return mxRecords.length > 0;
+      if (mxRecords.length > 0) return true;
     } catch (error) {
-      // Se não conseguir resolver MX, verificar se o domínio existe
+      // Se não conseguir resolver MX, tentar A/AAAA/CNAME
       try {
-        await dns.resolve(domain);
+        await dns.resolve(domain); // resolve A/AAAA/CNAME
         return true;
       } catch (domainError) {
         throw new Error('Domínio de e-mail inválido ou inexistente.');
       }
     }
+    // Se não tem MX mas respondeu DNS, já retornou true acima
+    return false;
   } catch (error) {
     console.error('Erro na validação de email:', error);
     throw error;

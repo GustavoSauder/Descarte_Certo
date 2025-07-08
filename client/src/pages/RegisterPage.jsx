@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaLeaf, FaGoogle, FaSpinner, FaCheck } from 'react-icons/fa';
+import { FaLeaf, FaSpinner, FaCheck } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase.js';
 import PasswordInput from '../components/ui/PasswordInput';
@@ -110,9 +110,12 @@ const RegisterPage = () => {
         grade: formData.grade.trim() || undefined
       };
       const { data } = await register(userData);
-      if (data && data.message) {
-        setErrors({});
-        setSuccessMsg('Cadastro realizado! Verifique seu e-mail para confirmar a conta.');
+      if (data && !data.error) {
+        setSuccessMsg('Cadastro realizado com sucesso! Verifique seu e-mail para confirmar a conta.');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000); // Redireciona após 2 segundos
+        return;
       } else {
         setErrors({ general: 'Erro ao criar conta. Tente novamente.' });
       }
@@ -122,26 +125,6 @@ const RegisterPage = () => {
     } finally {
       setIsLoading(false);
       console.log('Cadastro finalizado.');
-    }
-  };
-
-  const handleGoogleRegister = async () => {
-    try {
-      setIsLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-      
-      if (error) {
-        setErrors({ general: error.message });
-      }
-    } catch (error) {
-      setErrors({ general: 'Erro ao fazer cadastro com Google' });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -385,35 +368,24 @@ const RegisterPage = () => {
               </div>
             </div>
 
-            {/* Botão Google */}
-            <motion.button
-              type="button"
-              onClick={handleGoogleRegister}
-              disabled={isLoading}
-              className="w-full py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 flex items-center justify-center"
+            {/* Link para Login */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="mt-6 text-center"
             >
-              <FaGoogle className="mr-2 text-red-500" />
-              Google
-            </motion.button>
+              <p className="text-gray-600 dark:text-gray-400">
+                Já tem uma conta?{' '}
+                <Link
+                  to="/login"
+                  className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium transition-colors"
+                >
+                  Faça login
+                </Link>
+              </p>
+            </motion.div>
           </motion.form>
-
-          {/* Link para Login */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="mt-6 text-center"
-          >
-            <p className="text-gray-600 dark:text-gray-400">
-              Já tem uma conta?{' '}
-              <Link
-                to="/login"
-                className="text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium transition-colors"
-              >
-                Faça login
-              </Link>
-            </p>
-          </motion.div>
         </div>
       </motion.div>
     </div>

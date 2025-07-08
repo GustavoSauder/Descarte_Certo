@@ -1,67 +1,36 @@
 import React from 'react';
-import { FaPlay, FaUsers, FaHeart, FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
-
-const equipe = [
-  { 
-    nome: 'Gustavo Sauder', 
-    foto: '/equipe/gustavo.jpg', 
-    cargo: 'Coordenador de Projeto e Full Stack Developer',
-    descricao: 'Responsável pela coordenação geral do projeto, desenvolvimento full-stack e arquitetura de sistemas. Especialista em React, Node.js e tecnologias web modernas.',
-    github: 'https://github.com/gustavosauder',
-    linkedin: 'https://linkedin.com/in/gustavosauder',
-    email: 'gustavo.sauder@email.com'
-  },
-  { 
-    nome: 'Ana Marinho', 
-    foto: '/equipe/ana.jpg', 
-    cargo: 'Gestora de Conteúdo e Comunicação',
-    descricao: 'Responsável pela criação de conteúdo educativo, estratégias de comunicação e engajamento com a comunidade escolar.',
-    github: 'https://github.com/anamarinho',
-    linkedin: 'https://linkedin.com/in/anamarinho',
-    email: 'ana.marinho@email.com'
-  },
-  { 
-    nome: 'Giovanna Tigrinho', 
-    foto: '/equipe/giovanna.jpg', 
-    cargo: 'Designer e UX/UI',
-    descricao: 'Especialista em design de interfaces, experiência do usuário e identidade visual do projeto.',
-    github: 'https://github.com/giovannatigrinho',
-    linkedin: 'https://linkedin.com/in/giovannatigrinho',
-    email: 'giovanna.tigrinho@email.com'
-  },
-  { 
-    nome: 'Stefanny Leopatko', 
-    foto: '/equipe/stefanny.jpg', 
-    cargo: 'Desenvolvedora Frontend',
-    descricao: 'Desenvolvedora especializada em React, responsável pela interface do usuário e experiência mobile.',
-    github: 'https://github.com/stefannyleopatko',
-    linkedin: 'https://linkedin.com/in/stefannyleopatko',
-    email: 'stefanny.leopatko@email.com'
-  },
-  { 
-    nome: 'Kevin Murilo', 
-    foto: '/equipe/kevin.jpg', 
-    cargo: 'Desenvolvedor Backend',
-    descricao: 'Especialista em desenvolvimento backend, APIs e banco de dados. Responsável pela infraestrutura do sistema.',
-    github: 'https://github.com/kevinmurilo',
-    linkedin: 'https://linkedin.com/in/kevinmurilo',
-    email: 'kevin.murilo@email.com'
-  },
-  { 
-    nome: 'Camila Lau', 
-    foto: '/equipe/camila.jpg', 
-    cargo: 'Analista de Dados e QA',
-    descricao: 'Responsável pela análise de dados, qualidade de software e testes de usabilidade.',
-    github: 'https://github.com/camilalau',
-    linkedin: 'https://linkedin.com/in/camilalau',
-    email: 'camila.lau@email.com'
-  },
-];
+import { FaPlay, FaUsers, FaHeart, FaGithub, FaLinkedin, FaEnvelope, FaSync } from 'react-icons/fa';
+import { useEquipe } from '../hooks/useEquipe';
+import { Loading } from '../components/ui/Loading';
+import RealTimeMetrics from '../components/RealTimeMetrics';
+import { useMetrics } from '../hooks/useMetrics';
 
 export default function SobreEquipe() {
+  const { 
+    equipe, 
+    loading, 
+    isOnline, 
+    lastUpdate, 
+    resetarEquipe 
+  } = useEquipe();
+
+  const { onlineUsers, schoolsCount, citiesCount, totalWeight, loading: metricsLoading } = useMetrics();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-center py-20">
+            <Loading size="lg" text="Carregando informações da equipe..." />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
-      <div className="w-full max-w-7xl mx-auto space-y-12 px-4">
+      <div className="max-w-7xl mx-auto space-y-16 px-4">
         {/* Header */}
         <div className="text-center space-y-6">
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
@@ -74,12 +43,27 @@ export default function SobreEquipe() {
           <div className="flex justify-center items-center gap-8 text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-2">
               <FaUsers className="text-2xl text-green-600 dark:text-green-400" />
-              <span className="font-semibold">6 Especialistas</span>
+              <span className="font-semibold">{equipe.length} Especialistas</span>
             </div>
             <div className="flex items-center gap-2">
               <FaHeart className="text-2xl text-red-500" />
               <span className="font-semibold">100% Comprometidos</span>
             </div>
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span className="font-semibold">{isOnline ? 'Online' : 'Offline'}</span>
+            </div>
+          </div>
+          
+          {/* Botão de Reset */}
+          <div className="flex justify-center">
+            <button
+              onClick={resetarEquipe}
+              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
+            >
+              <FaSync className="text-sm" />
+              Restaurar Dados Padrão
+            </button>
           </div>
         </div>
 
@@ -148,6 +132,7 @@ export default function SobreEquipe() {
                   {membro.descricao}
                 </p>
                 <div className="flex justify-center gap-3">
+                  {membro.github && (
                   <a 
                     href={membro.github} 
                     target="_blank" 
@@ -156,6 +141,8 @@ export default function SobreEquipe() {
                   >
                     <FaGithub size={20} />
                   </a>
+                  )}
+                  {membro.linkedin && (
                   <a 
                     href={membro.linkedin} 
                     target="_blank" 
@@ -164,12 +151,15 @@ export default function SobreEquipe() {
                   >
                     <FaLinkedin size={20} />
                   </a>
+                  )}
+                  {membro.email && (
                   <a 
                     href={`mailto:${membro.email}`}
                     className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
                   >
                     <FaEnvelope size={20} />
                   </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -177,25 +167,14 @@ export default function SobreEquipe() {
         </div>
 
         {/* Estatísticas */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 rounded-xl shadow-lg p-8 text-white">
-          <h2 className="text-3xl font-bold mb-8 text-center">Nossos Números</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center mt-8">
             <div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">50+</div>
-              <div className="text-green-100">Escolas Atendidas</div>
+            <div className="text-3xl md:text-4xl font-bold mb-2">{metricsLoading ? '...' : schoolsCount}</div>
+            <div className="text-green-100">Escolas Parceiras</div>
             </div>
             <div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">10k+</div>
-              <div className="text-green-100">Estudantes Impactados</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">5k+</div>
+            <div className="text-3xl md:text-4xl font-bold mb-2">{metricsLoading ? '...' : totalWeight + ' kg'}</div>
               <div className="text-green-100">Kg de Resíduos Coletados</div>
-            </div>
-            <div>
-              <div className="text-3xl md:text-4xl font-bold mb-2">100%</div>
-              <div className="text-green-100">Satisfação</div>
-            </div>
           </div>
         </div>
 
@@ -221,6 +200,11 @@ export default function SobreEquipe() {
               Conheça o Projeto
             </a>
           </div>
+        </div>
+
+        <div>
+          <div>Usuários Ativos: {metricsLoading ? '...' : onlineUsers}</div>
+          <div>Cidades Atendidas: {metricsLoading ? '...' : citiesCount}</div>
         </div>
       </div>
     </div>

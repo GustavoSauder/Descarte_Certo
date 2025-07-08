@@ -50,7 +50,7 @@ import {
   FaKey,
   FaGift
 } from 'react-icons/fa';
-import { achievementService } from '../services';
+import { achievementService } from '../services/achievementService';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { Loading } from '../components/ui/Loading';

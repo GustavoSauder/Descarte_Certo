@@ -59,9 +59,9 @@ export default function Layout({ children }) {
 
           {/* Título centralizado - responsivo */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-            <Link to="/" className="flex items-center gap-1 text-base sm:text-xl font-bold text-white hover:text-green-100 transition-colors min-w-max whitespace-nowrap">
-              <FaLeaf className="text-lg sm:text-2xl" />
-              <span className="block text-xs sm:text-xl">Descarte Certo</span>
+            <Link to="/" className="flex items-center gap-2 text-xl sm:text-2xl md:text-3xl font-bold text-white hover:text-green-100 transition-colors min-w-max whitespace-nowrap">
+              <FaLeaf className="text-2xl sm:text-3xl md:text-4xl" />
+              <span className="block text-lg sm:text-2xl md:text-3xl">Descarte Certo</span>
             </Link>
           </div>
 
@@ -105,10 +105,76 @@ export default function Layout({ children }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-3 sm:py-4 px-2 sm:px-4">
-        <div className="w-full">
-          <div className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            <p>&copy; 2025 Descarte Certo. {t('developer_credit')}</p>
+      <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 py-6 sm:py-8 px-2 sm:px-4">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6">
+            {/* Logo e Descrição */}
+            <div className="col-span-1 lg:col-span-2">
+              <div className="flex items-center gap-2 mb-3">
+                <FaLeaf className="text-2xl text-green-600" />
+                <span className="text-lg font-bold text-gray-900 dark:text-white">Descarte Certo</span>
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Transformando o descarte em pontos, conquistas e impacto ambiental real. 
+                Juntos por um futuro mais sustentável.
+              </p>
+            </div>
+            
+            {/* Links Rápidos */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Links Rápidos</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/sobre-nos" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Sobre a Equipe
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/sobre-projeto" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Sobre o Projeto
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contato" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Contato
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/app" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Baixar App
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            
+            {/* Suporte */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Suporte</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link to="/suporte" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Central de Ajuda
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/cadastro" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Cadastre-se
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/login" className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+                    Entrar
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          {/* Copyright */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+            <div className="text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              <p>&copy; 2025 Descarte Certo. {t('developer_credit')}</p>
+            </div>
           </div>
         </div>
       </footer>

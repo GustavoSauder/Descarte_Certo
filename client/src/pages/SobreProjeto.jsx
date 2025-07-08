@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaPlay, FaLightbulb, FaRecycle, FaGraduationCap, FaMobile, FaChartLine, FaAward, FaUsers, FaLeaf } from 'react-icons/fa';
+import { FaPlay, FaLightbulb, FaRecycle, FaGraduationCap, FaMobile, FaChartLine, FaAward, FaUsers, FaLeaf, FaSchool, FaSmile } from 'react-icons/fa';
+import { useMetrics } from '../hooks/useMetrics';
 
 const fotos = [
   { src: '/projeto/foto1.jpg', legenda: 'Lixeira inteligente em funcionamento.' },
@@ -20,13 +21,15 @@ const tecnologias = [
 ];
 
 const conquistas = [
-  { ano: '2024', titulo: 'Prêmio Inovação Ambiental', descricao: 'Reconhecimento pela inovação em educação ambiental' },
-  { ano: '2023', titulo: '50+ Escolas Atendidas', descricao: 'Expansão para múltiplas instituições educacionais' },
-  { ano: '2023', titulo: '10k+ Estudantes Impactados', descricao: 'Alcance significativo na comunidade escolar' },
-  { ano: '2022', titulo: 'Protótipo Funcional', descricao: 'Primeira versão operacional do sistema' },
+      { ano: '2025', titulo: 'Prêmio Inovação Ambiental', descricao: 'Reconhecimento pela inovação em educação ambiental' },
+    { ano: '2025', titulo: '50+ Escolas Atendidas', descricao: 'Expansão para múltiplas instituições educacionais' },
+    { ano: '2025', titulo: '10k+ Estudantes Impactados', descricao: 'Alcance significativo na comunidade escolar' },
+    { ano: '2025', titulo: 'Protótipo Funcional', descricao: 'Primeira versão operacional do sistema' },
 ];
 
 export default function SobreProjeto() {
+  const { schoolsCount, totalWeight, loading } = useMetrics();
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="max-w-7xl mx-auto space-y-16 px-4">
@@ -195,18 +198,17 @@ export default function SobreProjeto() {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Nosso Impacto
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">50+</div>
-              <div className="text-gray-600 dark:text-gray-300">Escolas Atendidas</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">10k+</div>
-              <div className="text-gray-600 dark:text-gray-300">Estudantes Impactados</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">5k+</div>
-              <div className="text-gray-600 dark:text-gray-300">Kg de Resíduos Coletados</div>
+          <div className="bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 rounded-xl shadow-lg p-8 text-white">
+            <h2 className="text-3xl font-bold mb-8 text-center">Nossos Números</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-4xl font-bold mb-2">{loading ? '...' : schoolsCount}</div>
+                <div className="text-green-100">Escolas Parceiras</div>
+              </div>
+              <div>
+                <div className="text-4xl font-bold mb-2">{loading ? '...' : totalWeight + ' kg'}</div>
+                <div className="text-green-100">Kg de Resíduos Coletados</div>
+              </div>
             </div>
           </div>
         </div>

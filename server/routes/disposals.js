@@ -396,4 +396,43 @@ async function updateImpactData() {
   });
 }
 
+// Coleta de pontos via QR code da lixeira
+router.post('/qr-collect', authenticateToken, [
+  body('code').trim().notEmpty().withMessage('Código é obrigatório')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { code } = req.body;
+    const qrPattern = /^QR-[A-Z0-9]{6}$/i;
+    if (!qrPattern.test(code)) {
+      return res.status(400).json({ error: 'Apenas QR codes das lixeiras são aceitos.' });
+    }
+    // (Opcional) Verificar se o código já foi usado pelo usuário
+    const alreadyUsed = await prisma.qrCodeUse.findFirst({
+      where: { userId: req.user.userId, code }
+    });
+    if (alreadyUsed) {
+      return res.status(400).json({ error: 'Este QR code já foi utilizado por você.' });
+    }
+    // Registrar uso do código
+    await prisma.qrCodeUse.create({
+      data: { userId: req.user.userId, code }
+    });
+    // Premiar usuário
+    const points = 50;
+    await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { points: { increment: points } }
+    });
+    // (Opcional) Adicionar notificação, checar conquistas, etc.
+    res.status(200).json({ message: 'Pontos coletados com sucesso!', pointsEarned: points });
+  } catch (error) {
+    console.error('Erro ao coletar pontos via QR code:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 module.exports = router; 

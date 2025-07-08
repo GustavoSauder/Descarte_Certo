@@ -7,7 +7,7 @@ const path = require('path');
 
 class ProjectOwnership {
   constructor() {
-    this.ownerId = process.env.OWNER_ID || 'GUSTAVO_OWNER_2024';
+    this.ownerId = process.env.OWNER_ID || 'GUSTAVO_OWNER_2025';
     this.ownerEmail = process.env.OWNER_EMAIL || 'gustavo@descarte-certo.com';
     this.ownerKey = process.env.OWNER_KEY || crypto.randomBytes(32).toString('hex');
     this.projectHash = this.generateProjectHash();

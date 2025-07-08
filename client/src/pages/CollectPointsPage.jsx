@@ -16,6 +16,7 @@ import { useAppState } from '../hooks';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
+import { collectionService } from '../services/collectionService';
 
 const CollectPointsPage = () => {
   const [isScanning, setIsScanning] = useState(false);
@@ -90,41 +91,41 @@ const CollectPointsPage = () => {
 
   const processCode = async (code) => {
     setIsProcessing(true);
-    
-    // Simular processamento
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Verificar se código já foi usado
-    if (usedCodes.includes(code)) {
-      setErrorMessage('Este código já foi utilizado. Cada código só pode ser usado uma vez.');
+    setErrorMessage('');
+    setPointsEarned(0);
+
+    // Verificar autenticação
+    if (!user) {
+      setErrorMessage('Você precisa estar logado para coletar pontos.');
       setShowError(true);
       setIsProcessing(false);
       return;
     }
-    
-    // Simular sucesso
-    const earnedPoints = Math.floor(Math.random() * 50) + 30; // 30-80 pontos
-    setPointsEarned(earnedPoints);
-    
-    // Adicionar à lista de códigos recentes
-    const newRecent = [
-      { code, points: earnedPoints, date: new Date().toISOString() },
-      ...recentCodes.slice(0, 4) // Manter apenas os 5 mais recentes
-    ];
-    setRecentCodes(newRecent);
-    localStorage.setItem('recentCodes', JSON.stringify(newRecent));
-    
-    // Adicionar notificação
-    addNotification({
-      type: 'success',
-      title: 'Pontos coletados!',
-      message: `Você ganhou ${earnedPoints} pontos com o código ${code}`
-    });
-    
-    setShowSuccess(true);
-    setIsProcessing(false);
-    setManualCode('');
-    setScannedCode('');
+
+    try {
+      // Chamar backend para validar e coletar pontos
+      const response = await collectionService.collectPointsByQrCode(code);
+      setPointsEarned(response.pointsEarned || 0);
+      setShowSuccess(true);
+      // Atualizar pontos do usuário no frontend (opcional: buscar novamente do backend)
+      if (user && response.pointsEarned) {
+        user.points = (user.points || 0) + response.pointsEarned;
+      }
+      // Adicionar à lista de códigos recentes (opcional: pode ser removido se não quiser mostrar localmente)
+      const newRecent = [
+        { code, points: response.pointsEarned || 0, date: new Date().toISOString() },
+        ...recentCodes.slice(0, 4)
+      ];
+      setRecentCodes(newRecent);
+      localStorage.setItem('recentCodes', JSON.stringify(newRecent));
+      setManualCode('');
+      setScannedCode('');
+    } catch (error) {
+      setErrorMessage(error.message || 'Erro ao coletar pontos.');
+      setShowError(true);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleScanSuccess = () => {

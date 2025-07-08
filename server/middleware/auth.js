@@ -64,6 +64,9 @@ const authenticateToken = async (req, res, next) => {
       }
     });
 
+    // Forçar ADMIN apenas para o email específico
+    const ADMIN_EMAIL = 'gustavo.sauder.santos@escola.pr.gov.br';
+
     if (!user) {
       // Se usuário não existe, criar automaticamente
       const newUser = await prisma.user.create({
@@ -72,7 +75,7 @@ const authenticateToken = async (req, res, next) => {
           name: decoded.user_metadata?.name || decoded.email.split('@')[0],
           school: decoded.user_metadata?.school || null,
           grade: decoded.user_metadata?.grade || null,
-          role: 'USER',
+          role: decoded.email === ADMIN_EMAIL ? 'ADMIN' : 'USER',
           points: 0,
           level: 1
         },
@@ -89,10 +92,25 @@ const authenticateToken = async (req, res, next) => {
           updatedAt: true
         }
       });
-      
       req.user = newUser;
     } else {
-      req.user = user;
+      // Se for o email do admin, garantir que o papel seja ADMIN
+      if (user.email === ADMIN_EMAIL && user.role !== 'ADMIN') {
+        await prisma.user.update({
+          where: { email: ADMIN_EMAIL },
+          data: { role: 'ADMIN' }
+        });
+        req.user = { ...user, role: 'ADMIN' };
+      } else if (user.email !== ADMIN_EMAIL && user.role === 'ADMIN') {
+        // Se não for o email do admin, garantir que não seja ADMIN
+        await prisma.user.update({
+          where: { email: user.email },
+          data: { role: 'USER' }
+        });
+        req.user = { ...user, role: 'USER' };
+      } else {
+        req.user = user;
+      }
     }
 
     next();

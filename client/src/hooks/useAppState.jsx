@@ -1,4 +1,6 @@
 import { useState, useEffect, createContext, useContext } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
 
 const AppStateContext = createContext();
 
@@ -11,6 +13,7 @@ export const useAppState = () => {
 };
 
 export const AppStateProvider = ({ children }) => {
+  const { user } = useAuth();
   const [theme, setTheme] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) return savedTheme;
@@ -142,6 +145,19 @@ export const AppStateProvider = ({ children }) => {
     showLoading,
     hideLoading,
   };
+
+  useEffect(() => {
+    if (!user || !user.id) return;
+    const updateOnline = async () => {
+      await supabase
+        .from('users')
+        .update({ lastOnline: new Date().toISOString() })
+        .eq('id', user.id);
+    };
+    updateOnline();
+    const interval = setInterval(updateOnline, 30000); // a cada 30s
+    return () => clearInterval(interval);
+  }, [user && user.id]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }; 

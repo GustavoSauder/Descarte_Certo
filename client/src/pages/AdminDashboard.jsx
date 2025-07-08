@@ -15,6 +15,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useAppState } from '../hooks';
 import api from '../services/api';
 import { Loading } from '../components/ui/Loading';
+import { useMetrics } from '../hooks/useMetrics';
 
 const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -29,6 +30,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const { onlineUsers, schoolsCount, citiesCount, totalWeight, loading: metricsLoading } = useMetrics();
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'ADMIN') {

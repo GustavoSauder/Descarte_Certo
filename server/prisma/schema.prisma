@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,56 +8,54 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      String   @default("USER")
-  school    String?
-  grade     String?
-  points    Int      @default(0)
-  level     Int      @default(1)
-  experience Int     @default(0)
-  city      String?
-  state     String?
-  avatar    String?
-  bio       String?
-  socialLinks String?
-  lastLogin DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  emailConfirmed Boolean @default(false)
+  id                     String            @id @default(cuid())
+  email                  String            @unique
+  name                   String
+  password               String
+  role                   String            @default("USER")
+  school                 String?
+  grade                  String?
+  points                 Int               @default(0)
+  level                  Int               @default(1)
+  experience             Int               @default(0)
+  city                   String?
+  state                  String?
+  avatar                 String?
+  bio                    String?
+  socialLinks            String?
+  lastLogin              DateTime?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  emailConfirmed         Boolean           @default(false)
   emailConfirmationToken String?
-
-  disposals    Disposal[]
-  achievements Achievement[]
-  rewards      Reward[]
-  stories      Story[]
-  notifications Notification[]
-  challenges   UserChallenge[]
-  blogPosts    BlogPost[]
-  supportTickets SupportTicket[]
-  activities   Activity[]
-  donations    Donation[]
-  comments     Comment[]
-  commentReactions CommentReaction[]
+  achievements           Achievement[]
+  activities             Activity[]
+  blogPosts              BlogPost[]
+  commentReactions       CommentReaction[]
+  comments               Comment[]
+  disposals              Disposal[]
+  donations              Donation[]
+  notifications          Notification[]
+  rewards                Reward[]
+  stories                Story[]
+  supportTickets         SupportTicket[]
+  challenges             UserChallenge[]
 
   @@map("users")
 }
 
 model Disposal {
-  id          String   @id @default(cuid())
-  userId      String
+  id           String   @id @default(cuid())
+  userId       String
   materialType String
-  weight      Float
-  imageUrl    String?
-  location    String?
-  city        String?
-  state       String?
-  points      Int
-  createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weight       Float
+  imageUrl     String?
+  location     String?
+  city         String?
+  state        String?
+  points       Int
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("disposals")
 }
@@ -74,40 +69,37 @@ model Achievement {
   icon        String
   badgeType   String   @default("BRONZE")
   unlockedAt  DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("achievements")
 }
 
 model Challenge {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  type        String
-  target      Int
-  points      Int
-  startDate   DateTime
-  endDate     DateTime
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-
+  id           String          @id @default(cuid())
+  title        String
+  description  String
+  type         String
+  target       Int
+  points       Int
+  startDate    DateTime
+  endDate      DateTime
+  active       Boolean         @default(true)
+  createdAt    DateTime        @default(now())
   participants UserChallenge[]
 
   @@map("challenges")
 }
 
 model UserChallenge {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
   challengeId String
-  progress    Int      @default(0)
-  completed   Boolean  @default(false)
+  progress    Int       @default(0)
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  createdAt   DateTime @default(now())
-
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  challenge Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, challengeId])
   @@map("user_challenges")
@@ -123,8 +115,7 @@ model Reward {
   partner     String?
   code        String?
   claimedAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("rewards")
 }
@@ -147,53 +138,50 @@ model RewardCatalog {
 }
 
 model Story {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  content     String
-  imageUrl    String?
-  impact      String
-  approved    Boolean  @default(false)
-  likes       Int      @default(0)
-  views       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  imageUrl  String?
+  impact    String
+  approved  Boolean  @default(false)
+  likes     Int      @default(0)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("stories")
 }
 
 model BlogPost {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  content     String
-  excerpt     String?
-  imageUrl    String?
-  tags        String?
-  published   Boolean  @default(false)
-  views       Int      @default(0)
-  likes       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  excerpt   String?
+  imageUrl  String?
+  tags      String?
+  published Boolean  @default(false)
+  views     Int      @default(0)
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("blog_posts")
 }
 
 model Notification {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  message     String
-  type        String
-  read        Boolean  @default(false)
-  data        String?
-  createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  data      String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
@@ -206,8 +194,7 @@ model Activity {
   data        String?
   public      Boolean  @default(true)
   createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("activities")
 }
@@ -250,20 +237,20 @@ model ImpactData {
 }
 
 model CollectionPoint {
-  id          String   @id @default(cuid())
-  name        String
-  address     String
-  city        String
-  state       String
-  latitude    Float
-  longitude   Float
-  materials   String
-  phone       String?
-  email       String?
-  website     String?
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  address   String
+  city      String
+  state     String
+  latitude  Float
+  longitude Float
+  materials String
+  phone     String?
+  email     String?
+  website   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("collection_points")
 }
@@ -284,33 +271,31 @@ model Contact {
 }
 
 model SupportTicket {
-  id          String   @id @default(cuid())
-  userId      String
-  subject     String
-  message     String
-  priority    String   @default("MEDIUM")
-  status      String   @default("OPEN")
-  category    String
-  assignedTo  String?
-  resolvedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String    @id @default(cuid())
+  userId     String
+  subject    String
+  message    String
+  priority   String    @default("MEDIUM")
+  status     String    @default("OPEN")
+  category   String
+  assignedTo String?
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("support_tickets")
 }
 
 model Donation {
-  id          String   @id @default(cuid())
-  userId      String
-  points      Int
-  cause       String
-  message     String?
-  anonymous   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  points    Int
+  cause     String
+  message   String?
+  anonymous Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("donations")
 }
@@ -331,24 +316,23 @@ model Partner {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
-  userId    String?
-  name      String
-  email     String
-  content   String
-  approved  Boolean  @default(false)
-  likes     Int      @default(0)
-  dislikes  Int      @default(0)
-  parentId  String?  // Para comentários em resposta
-  storyId   String?  // Para comentários em histórias
-  blogPostId String? // Para comentários em posts do blog
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("CommentReplies")
-  reactions CommentReaction[]
+  id         String            @id @default(cuid())
+  userId     String?
+  name       String
+  email      String
+  content    String
+  approved   Boolean           @default(false)
+  likes      Int               @default(0)
+  dislikes   Int               @default(0)
+  parentId   String?
+  storyId    String?
+  blogPostId String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  reactions  CommentReaction[]
+  parent     Comment?          @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[]         @relation("CommentReplies")
+  user       User?             @relation(fields: [userId], references: [id])
 
   @@map("comments")
 }
@@ -357,25 +341,24 @@ model CommentReaction {
   id        String   @id @default(cuid())
   userId    String
   commentId String
-  type      String   // "LIKE" or "DISLIKE"
+  type      String
   createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, commentId])
   @@map("comment_reactions")
 }
 
 model AchievementCatalog {
-  id          String   @id @default(uuid())
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title       String
   description String?
-  points      Int      @default(0)
+  points      Int?      @default(0)
   icon        String?
-  badgeType   String   @default("BRONZE")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  badgetype   String?   @default("BRONZE")
+  createdat   DateTime? @default(now()) @db.Timestamptz(6)
+  updatedat   DateTime? @default(now()) @db.Timestamptz(6)
 
   @@map("achievement_catalog")
-} 
+}
