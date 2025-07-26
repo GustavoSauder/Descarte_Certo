@@ -227,4 +227,4 @@ Agradecemos a todos os contribuidores e à comunidade que apoia projetos de sust
 
 **Status**: ✅ Em desenvolvimento ativo  
 **Versão**: 2.0.0  
-**Última atualização**: Janeiro 2025 
+**Última atualização**: Janeiro 2025
