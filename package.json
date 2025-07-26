@@ -8,8 +8,10 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "build": "cd client && npm run build",
+    "build:vercel": "cd client && npm run build",
     "install-all": "npm install && cd server && npm install && cd ../client && npm install",
-    "start": "cd server && npm start"
+    "start": "cd server && npm start",
+    "vercel-build": "npm run build:vercel"
   },
   "keywords": [
     "sustentabilidade",

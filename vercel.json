@@ -1,8 +1,49 @@
 {
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    },
+    {
+      "src": "server/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server/index.js"
+    },
+    {
+      "src": "/docs/(.*)",
+      "dest": "/server/public/docs/$1"
+    },
+    {
+      "src": "/apps/(.*)",
+      "dest": "/server/public/apps/$1"
+    },
+    {
+      "src": "/qr/(.*)",
+      "dest": "/server/public/qr/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/client/dist/$1"
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/docs/(.*)", "destination": "/docs/$1" },
     { "source": "/apps/(.*)", "destination": "/apps/$1" },
     { "source": "/qr/(.*)", "destination": "/qr/$1" }
-  ]
+  ],
+  "functions": {
+    "server/index.js": {
+      "maxDuration": 30
+    }
+  }
 }
